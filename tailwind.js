@@ -1,7 +1,11 @@
 module.exports = {
   purge: [],
   theme: {
-    extend: {},
+    extend: {
+      maxWidth: {
+        "max-content": "max-content"
+      }
+    },
   },
   variants: {},
   plugins: [],
