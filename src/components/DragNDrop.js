@@ -3,19 +3,6 @@ import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import { v4 as uuid } from "uuid";
 import axios from "axios";
 
-const itemsFromBackend = [
-  {
-    id: uuid(),
-    role: "Sr. Frontend Engineer",
-    company: "Uber",
-  },
-  {
-    id: uuid(),
-    role: "Sr. Javascript Developer",
-    company: "Spotify",
-  },
-];
-
 const onDragEnd = (result, columns, setColumns) => {
   if (!result.destination) return;
   const { source, destination } = result;
