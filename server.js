@@ -1,6 +1,6 @@
 require("dotenv").config();
 const express = require("express");
-const { MongoClient } = require("mongodb");
+const { MongoClient, ObjectId } = require("mongodb");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const app = express();
@@ -29,8 +29,8 @@ async function run() {
           methods: "GET,PUT,POST,DELETE",
         })
       );
-      //   app.use(bodyParser.urlencoded({ extended: true }));
-      //   app.use(bodyParser.json());
+      app.use(bodyParser.urlencoded({ extended: true }));
+      app.use(bodyParser.json());
 
       app.get("/items", async (req, res) => {
         try {
@@ -43,6 +43,29 @@ async function run() {
             })
             .toArray();
           res.json(findResult);
+        } catch (err) {
+          console.log(err);
+        }
+      });
+      app.put("/items", async (req, res) => {
+        try {
+          const { user, role, company, status, info } = req.body;
+
+          let newDoc = {
+            _id: ObjectId,
+            user: user,
+            role: role,
+            company: company,
+            status: status,
+            info: info,
+          };
+
+          const database = client.db("seekr");
+          const collection = database.collection("items");
+
+          const result = await collection
+            .insertOne(newDoc)
+            .then(() => res.json({ message: "SUCCESSFUL PUT REQUEST" }));
         } catch (err) {
           console.log(err);
         }

@@ -1,4 +1,6 @@
 import React, { useState, useRef } from "react";
+import axios from "axios";
+import { v4 as uuid } from "uuid";
 import {
   Modal,
   ModalBody,
@@ -16,6 +18,19 @@ function NewJob({ setAppliedColumn }) {
 
   const roleRef = useRef();
   const companyRef = useRef();
+
+  const submitToDB = async () => {
+    axios
+      .put("http://localhost:4000/items", {
+        _id: null,
+        user: "john", // SWAP OUT FOR CURRENTLY LOGGED IN USER WHEN USER AUTH IS SET UP
+        role: roleRef.current.value,
+        company: companyRef.current.value,
+        status: "applied",
+        info: null,
+      })
+      .then((res) => console.log(res.data.message));
+  };
 
   const toggleFunc = () => {
     setToggle(!toggle);
@@ -69,15 +84,16 @@ function NewJob({ setAppliedColumn }) {
                 onClick={() => {
                   setAppliedColumn([
                     {
-                      _id: "69",
-                      user: "john",
+                      _id: uuid(),
+                      user: "john", // SWAP OUT FOR CURRENTLY LOGGED IN USER WHEN USER AUTH IS SET UP
                       role: roleRef.current.value,
                       company: companyRef.current.value,
                       status: "applied",
                       info: null,
                     },
                   ]);
-                  toggleFunc()
+                  submitToDB();
+                  toggleFunc();
                 }}
               >
                 Add
