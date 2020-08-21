@@ -8,6 +8,7 @@ import {
   Form,
   FormInput,
   FormGroup,
+  FormFeedback,
   Button,
 } from "shards-react";
 
@@ -16,20 +17,23 @@ function NewJob({ setAppliedColumn }) {
   const [roleValue, setRoleValue] = useState("");
   const [companyValue, setCompanyValue] = useState("");
 
+  const [companyInvalid, setCompanyInvalid] = useState(false);
+  const [roleInvalid, setRoleInvalid] = useState(false);
+
   const roleRef = useRef();
   const companyRef = useRef();
 
   const submitToDB = async () => {
-    axios
-      .put("http://localhost:4000/items", {
-        _id: null,
-        user: "john", // SWAP OUT FOR CURRENTLY LOGGED IN USER WHEN USER AUTH IS SET UP
-        role: roleRef.current.value,
-        company: companyRef.current.value,
-        status: "applied",
-        info: null,
-      })
-      .then((res) => console.log(res.data.message));
+    // axios
+    //   .put("http://localhost:4000/items", {
+    //     _id: null,
+    //     user: "john", // SWAP OUT FOR CURRENTLY LOGGED IN USER WHEN USER AUTH IS SET UP
+    //     role: roleRef.current.value,
+    //     company: companyRef.current.value,
+    //     status: "applied",
+    //     info: null,
+    //   })
+    //   .then((res) => console.log(res.data.message));
   };
 
   const toggleFunc = () => {
@@ -56,6 +60,7 @@ function NewJob({ setAppliedColumn }) {
                   id="#role"
                   placeholder="Role"
                   autocomplete="off"
+                  invalid={roleInvalid}
                   value={roleValue}
                   innerRef={roleRef}
                   onChange={(e) => {
@@ -67,6 +72,7 @@ function NewJob({ setAppliedColumn }) {
                 id="#company"
                 placeholder="Company"
                 autocomplete="off"
+                invalid={companyInvalid}
                 value={companyValue}
                 innerRef={companyRef}
                 onChange={(e) => {
@@ -82,18 +88,30 @@ function NewJob({ setAppliedColumn }) {
                 theme="primary"
                 className="ml-auto mt-2"
                 onClick={() => {
-                  setAppliedColumn([
-                    {
-                      _id: uuid(),
-                      user: "john", // SWAP OUT FOR CURRENTLY LOGGED IN USER WHEN USER AUTH IS SET UP
-                      role: roleRef.current.value,
-                      company: companyRef.current.value,
-                      status: "applied",
-                      info: null,
-                    },
-                  ]);
-                  submitToDB();
-                  toggleFunc();
+                  if (roleRef.current.value !== "") {
+                    setRoleInvalid(false);
+                  } else {
+                    setRoleInvalid(true);
+                  }
+                  if (companyRef.current.value !== "") {
+                    setCompanyInvalid(false);
+                  } else {
+                    setCompanyInvalid(true);
+                  }
+                  if (!roleInvalid && !companyInvalid) {
+                    setAppliedColumn([
+                      {
+                        _id: uuid(),
+                        user: "john", // SWAP OUT FOR CURRENTLY LOGGED IN USER WHEN USER AUTH IS SET UP
+                        role: roleRef.current.value,
+                        company: companyRef.current.value,
+                        status: "applied",
+                        info: null,
+                      },
+                    ]);
+                    submitToDB();
+                    toggleFunc();
+                  }
                 }}
               >
                 Add

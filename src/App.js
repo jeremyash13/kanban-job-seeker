@@ -1,15 +1,14 @@
 import React from "react";
 import DragNDrop from "./components/DragNDrop";
+import Navbar from "./components/Navbar";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "shards-ui/dist/css/shards.min.css";
 
-
-
 function App() {
-
   return (
     <div className="p-4">
+      <Navbar />
       <h3>Job Seeker</h3>
       <DragNDrop />
     </div>
