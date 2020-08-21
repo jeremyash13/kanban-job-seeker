@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
-import { v4 as uuid } from "uuid";
 import axios from "axios";
+import { v4 as uuid } from "uuid";
+
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import NewJob from "./NewJob";
 
 const onDragEnd = (result, columns, setColumns) => {
   if (!result.destination) return;
@@ -50,11 +52,30 @@ const appliedID = "applied";
 const interviewingID = "interviews";
 const offersID = "offers";
 
+let appliedColumn = [];
+
 function DragNDrop() {
-  let appliedColumn = [];
   const [interviewingColumn, setInterviewingColumn] = useState([]);
   const [offersColumn, setOffersColumn] = useState([]);
   const [columns, setColumns] = useState({});
+
+  const setAppliedColumn = (newState) => {
+    appliedColumn = [...appliedColumn, ...newState];
+    setColumns({
+      [appliedID]: {
+        name: "Applied",
+        items: appliedColumn,
+      },
+      [interviewingID]: {
+        name: "Interviewing",
+        items: interviewingColumn,
+      },
+      [offersID]: {
+        name: "Offers",
+        items: offersColumn,
+      },
+    });
+  };
 
   const fetchItems = () => {
     const url = "http://localhost:4000/items";
@@ -64,21 +85,7 @@ function DragNDrop() {
       url: url,
     })
       .then((json) => {
-        appliedColumn = [...json.data];
-        setColumns({
-          [appliedID]: {
-            name: "Applied",
-            items: appliedColumn,
-          },
-          [interviewingID]: {
-            name: "Interviewing",
-            items: interviewingColumn,
-          },
-          [offersID]: {
-            name: "Offers",
-            items: offersColumn,
-          },
-        });
+        setAppliedColumn(json.data);
       })
       .catch((err) => {
         console.log(err);
@@ -90,78 +97,82 @@ function DragNDrop() {
   }, []);
 
   return (
-    <div className="flex">
-      <DragDropContext
-        onDragEnd={(result) => onDragEnd(result, columns, setColumns)}
-      >
-        {Object.entries(columns).map(([id, column]) => {
-          console.log(columns);
-          return (
-            <div className="mr-4" key={id + column}>
-              <h6 className="font-medium">{`${column.name} ${column.items.length}`}</h6>
-              <Droppable droppableId={id} key={id}>
-                {(provided, snapshot) => {
-                  return (
-                    <div
-                      {...provided.droppableProps}
-                      ref={provided.innerRef}
-                      className="rounded"
-                      style={{
-                        background: snapshot.isDraggingOver ? "lightblue" : "",
-                        padding: "4px",
-                        width: "250px",
-                        minHeight: "500px",
-                      }}
-                    >
-                      {column.items.map((item, index) => {
-                        return (
-                          <Draggable
-                            key={item._id}
-                            draggableId={item._id}
-                            index={index}
-                          >
-                            {(provided, snapshot) => {
-                              return (
-                                <div
-                                  ref={provided.innerRef}
-                                  {...provided.draggableProps}
-                                  {...provided.dragHandleProps}
-                                  className="rounded"
-                                  style={{
-                                    userSelect: "none",
-                                    padding: "16px",
-                                    margin: "0 0 8px 0",
-                                    minHeight: "50px",
-                                    border: "solid 1px black",
-                                    backgroundColor: snapshot.isDragging
-                                      ? "#fef2e3"
-                                      : "",
-                                    boxShadow: snapshot.isDragging
-                                      ? "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.08)"
-                                      : "",
-                                    ...provided.draggableProps.style,
-                                  }}
-                                >
-                                  <h6>{item.role}</h6>
-                                  <div className="text-gray-600 font-normal">
-                                    {item.company}
+    <>
+      <NewJob setAppliedColumn={setAppliedColumn} />
+      <div className="flex">
+        <DragDropContext
+          onDragEnd={(result) => onDragEnd(result, columns, setColumns)}
+        >
+          {Object.entries(columns).map(([id, column]) => {
+            return (
+              <div className="mr-4" key={id + column}>
+                <h6 className="font-medium">{`${column.name} ${column.items.length}`}</h6>
+                <Droppable droppableId={id} key={id}>
+                  {(provided, snapshot) => {
+                    return (
+                      <div
+                        {...provided.droppableProps}
+                        ref={provided.innerRef}
+                        className="rounded"
+                        style={{
+                          background: snapshot.isDraggingOver
+                            ? "lightblue"
+                            : "",
+                          padding: "4px",
+                          width: "250px",
+                          minHeight: "500px",
+                        }}
+                      >
+                        {column.items.map((item, index) => {
+                          return (
+                            <Draggable
+                              key={item._id}
+                              draggableId={item._id}
+                              index={index}
+                            >
+                              {(provided, snapshot) => {
+                                return (
+                                  <div
+                                    ref={provided.innerRef}
+                                    {...provided.draggableProps}
+                                    {...provided.dragHandleProps}
+                                    className="rounded"
+                                    style={{
+                                      userSelect: "none",
+                                      padding: "16px",
+                                      margin: "0 0 8px 0",
+                                      minHeight: "50px",
+                                      border: "solid 1px black",
+                                      backgroundColor: snapshot.isDragging
+                                        ? "#fef2e3"
+                                        : "",
+                                      boxShadow: snapshot.isDragging
+                                        ? "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.08)"
+                                        : "",
+                                      ...provided.draggableProps.style,
+                                    }}
+                                  >
+                                    <h6>{item.role}</h6>
+                                    <div className="text-gray-600 font-normal">
+                                      {item.company}
+                                    </div>
                                   </div>
-                                </div>
-                              );
-                            }}
-                          </Draggable>
-                        );
-                      })}
-                      {provided.placeholder}
-                    </div>
-                  );
-                }}
-              </Droppable>
-            </div>
-          );
-        })}
-      </DragDropContext>
-    </div>
+                                );
+                              }}
+                            </Draggable>
+                          );
+                        })}
+                        {provided.placeholder}
+                      </div>
+                    );
+                  }}
+                </Droppable>
+              </div>
+            );
+          })}
+        </DragDropContext>
+      </div>
+    </>
   );
 }
 

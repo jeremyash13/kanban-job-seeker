@@ -1,24 +1,89 @@
-import React, { useState } from "react";
-import { Modal, ModalBody, ModalHeader } from "shards-react";
+import React, { useState, useRef } from "react";
+import {
+  Modal,
+  ModalBody,
+  ModalHeader,
+  Form,
+  FormInput,
+  FormGroup,
+  Button,
+} from "shards-react";
 
-function NewJob() {
+function NewJob({ setAppliedColumn }) {
   const [toggle, setToggle] = useState(false);
+  const [roleValue, setRoleValue] = useState("");
+  const [companyValue, setCompanyValue] = useState("");
+
+  const roleRef = useRef();
+  const companyRef = useRef();
+
   const toggleFunc = () => {
     setToggle(!toggle);
   };
+
   return (
     <>
-      <div
-        className="cursor-pointer flex max-w-max-content mb-4 mt-10 font-normal hover:text-black transition-colors duration-300"
+      <Button
+        outline
+        size="sm"
+        className="mb-4 mt-10"
         onClick={() => toggleFunc()}
       >
-        <span>+</span>
-        <span>Add New Job</span>
-      </div>
+        + New
+      </Button>
       {toggle && (
         <Modal open={toggle} toggle={toggleFunc} centered>
-          <ModalHeader>Header</ModalHeader>
-          <ModalBody>👋 Hello there!</ModalBody>
+          <ModalHeader>Add New Job</ModalHeader>
+          <ModalBody>
+            <Form>
+              <FormGroup>
+                <FormInput
+                  id="#role"
+                  placeholder="Role"
+                  autocomplete="off"
+                  value={roleValue}
+                  innerRef={roleRef}
+                  onChange={(e) => {
+                    setRoleValue(e.value);
+                  }}
+                />
+              </FormGroup>
+              <FormInput
+                id="#company"
+                placeholder="Company"
+                autocomplete="off"
+                value={companyValue}
+                innerRef={companyRef}
+                onChange={(e) => {
+                  setCompanyValue(e.value);
+                }}
+              />
+            </Form>
+            <div className="flex">
+              <Button
+                outline
+                pill
+                size="sm"
+                theme="primary"
+                className="ml-auto mt-2"
+                onClick={() => {
+                  setAppliedColumn([
+                    {
+                      _id: "69",
+                      user: "john",
+                      role: roleRef.current.value,
+                      company: companyRef.current.value,
+                      status: "applied",
+                      info: null,
+                    },
+                  ]);
+                  toggleFunc()
+                }}
+              >
+                Add
+              </Button>
+            </div>
+          </ModalBody>
         </Modal>
       )}
     </>
