@@ -32,14 +32,16 @@ async function run() {
       app.use(bodyParser.urlencoded({ extended: true }));
       app.use(bodyParser.json());
 
-      app.get("/items", async (req, res) => {
+      app.post("/items", async (req, res) => {
         try {
           const database = client.db("seekr");
           const collection = database.collection("items");
 
+          const { user } = req.body;
+
           const findResult = await collection
             .find({
-              user: "john",
+              user: user,
             })
             .toArray();
           res.json(findResult);

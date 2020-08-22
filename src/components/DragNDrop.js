@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { v4 as uuid } from "uuid";
+import { useAuth0 } from "@auth0/auth0-react";
 
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import NewJob from "./NewJob";
@@ -59,6 +60,8 @@ function DragNDrop() {
   const [offersColumn, setOffersColumn] = useState([]);
   const [columns, setColumns] = useState({});
 
+  const { user } = useAuth0();
+
   const setAppliedColumn = (newState) => {
     appliedColumn = [...appliedColumn, ...newState];
     setColumns({
@@ -77,13 +80,13 @@ function DragNDrop() {
     });
   };
 
-  const fetchItems = () => {
+  const fetchItems = (user) => {
     const url = "http://localhost:4000/items";
 
-    axios({
-      method: "GET",
-      url: url,
-    })
+    axios
+      .post(url, {
+        user: user.email,
+      })
       .then((json) => {
         setAppliedColumn(json.data);
       })
@@ -93,20 +96,22 @@ function DragNDrop() {
   };
 
   useEffect(() => {
-    fetchItems();
-  }, []);
+    if (user) {
+      fetchItems(user);
+    }
+  }, [user]);
 
   return (
     <>
       <NewJob setAppliedColumn={setAppliedColumn} />
-      <div className="flex">
+      <div className="flex user-select-none">
         <DragDropContext
           onDragEnd={(result) => onDragEnd(result, columns, setColumns)}
         >
           {Object.entries(columns).map(([id, column]) => {
             return (
               <div className="mr-4" key={id + column}>
-                <h6 className="font-medium">{`${column.name} ${column.items.length}`}</h6>
+                <h6 className="font-medium">{`${column.items.length} ${column.name}`}</h6>
                 <Droppable droppableId={id} key={id}>
                   {(provided, snapshot) => {
                     return (

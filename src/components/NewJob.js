@@ -1,6 +1,8 @@
 import React, { useState, useRef } from "react";
 import axios from "axios";
 import { v4 as uuid } from "uuid";
+import { useAuth0 } from "@auth0/auth0-react";
+
 import {
   Modal,
   ModalBody,
@@ -23,17 +25,19 @@ function NewJob({ setAppliedColumn }) {
   const roleRef = useRef();
   const companyRef = useRef();
 
-  const submitToDB = async () => {
-    // axios
-    //   .put("http://localhost:4000/items", {
-    //     _id: null,
-    //     user: "john", // SWAP OUT FOR CURRENTLY LOGGED IN USER WHEN USER AUTH IS SET UP
-    //     role: roleRef.current.value,
-    //     company: companyRef.current.value,
-    //     status: "applied",
-    //     info: null,
-    //   })
-    //   .then((res) => console.log(res.data.message));
+  const { user } = useAuth0();
+
+  const submitToDB = async (user) => {
+    axios
+      .put("http://localhost:4000/items", {
+        _id: null,
+        user: user.email,
+        role: roleRef.current.value,
+        company: companyRef.current.value,
+        status: "applied",
+        info: null,
+      })
+      .then((res) => console.log(res.data.message));
   };
 
   const toggleFunc = () => {
@@ -102,14 +106,14 @@ function NewJob({ setAppliedColumn }) {
                     setAppliedColumn([
                       {
                         _id: uuid(),
-                        user: "john", // SWAP OUT FOR CURRENTLY LOGGED IN USER WHEN USER AUTH IS SET UP
+                        user: user.email,
                         role: roleRef.current.value,
                         company: companyRef.current.value,
                         status: "applied",
                         info: null,
                       },
                     ]);
-                    submitToDB();
+                    submitToDB(user);
                     toggleFunc();
                   }
                 }}
