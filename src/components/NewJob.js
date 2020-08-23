@@ -14,7 +14,7 @@ import {
   Button,
 } from "shards-react";
 
-function NewJob({ setAppliedColumn }) {
+function NewJob({ createNewJob }) {
   const [toggle, setToggle] = useState(false);
   const [roleValue, setRoleValue] = useState("");
   const [companyValue, setCompanyValue] = useState("");
@@ -27,7 +27,11 @@ function NewJob({ setAppliedColumn }) {
 
   const { user } = useAuth0();
 
-  const submitToDB = async (user) => {
+  const toggleFunc = () => {
+    setToggle(!toggle);
+  };
+
+  const submitNewToDB = async (user) => {
     axios
       .put("http://localhost:4000/items", {
         _id: null,
@@ -40,18 +44,9 @@ function NewJob({ setAppliedColumn }) {
       .then((res) => console.log(res.data.message));
   };
 
-  const toggleFunc = () => {
-    setToggle(!toggle);
-  };
-
   return (
     <>
-      <Button
-        outline
-        size="sm"
-        className="mb-4 mt-10"
-        onClick={() => toggleFunc()}
-      >
+      <Button size="sm" className="mb-4 mt-10" onClick={() => toggleFunc()}>
         + New
       </Button>
       {toggle && (
@@ -63,7 +58,7 @@ function NewJob({ setAppliedColumn }) {
                 <FormInput
                   id="#role"
                   placeholder="Role"
-                  autocomplete="off"
+                  autoComplete="off"
                   invalid={roleInvalid}
                   value={roleValue}
                   innerRef={roleRef}
@@ -75,7 +70,7 @@ function NewJob({ setAppliedColumn }) {
               <FormInput
                 id="#company"
                 placeholder="Company"
-                autocomplete="off"
+                autoComplete="off"
                 invalid={companyInvalid}
                 value={companyValue}
                 innerRef={companyRef}
@@ -103,7 +98,7 @@ function NewJob({ setAppliedColumn }) {
                     setCompanyInvalid(true);
                   }
                   if (!roleInvalid && !companyInvalid) {
-                    setAppliedColumn([
+                    createNewJob([
                       {
                         _id: uuid(),
                         user: user.email,
@@ -113,7 +108,7 @@ function NewJob({ setAppliedColumn }) {
                         info: null,
                       },
                     ]);
-                    submitToDB(user);
+                    submitNewToDB(user);
                     toggleFunc();
                   }
                 }}

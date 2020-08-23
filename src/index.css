@@ -18644,6 +18644,31 @@ video {
   animation: bounce 1s infinite;
 }
 
+@font-face {
+  font-family: "CircularBook";
+
+  src: url("./fonts/circular/circular-book.otf");
+}
+
+@font-face {
+  font-family: "CircularBold";
+
+  src: url("./fonts/circular/circular-bold.otf");
+}
+
+* {
+  font-family: CircularBook !important;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: CircularBold !important;
+}
+
+body {
+  min-height: 100vh;
+  background-color: rgb(216, 235, 252);
+}
+
 @media (min-width: 640px) {
   .sm\:container {
     width: 100%;

@@ -8,6 +8,7 @@ import {
   DropdownItem,
   DropdownMenu,
   DropdownToggle,
+  Fade,
 } from "shards-react";
 import { useAuth0 } from "@auth0/auth0-react";
 
@@ -27,7 +28,7 @@ const LogoutIcon = () => {
         width="1em"
         height="1em"
         viewBox="0 0 16 16"
-        class="bi bi-power"
+        className="bi bi-power"
         fill="currentColor"
         xmlns="http://www.w3.org/2000/svg"
       >
@@ -50,24 +51,31 @@ function Navbar() {
         <NavItem>
           {isAuthenticated ? (
             <NavItem>
-              <Dropdown
-                open={toggle}
-                toggle={() => setToggle(!toggle)}
-                size="md"
-                className="mr-2"
-              >
-                <DropdownToggle nav caret>{`Hi, ${user.email}`}</DropdownToggle>
-                <DropdownMenu small right>
-                  <DropdownItem
-                    onClick={() => logout({ returnTo: window.location.origin })}
-                  >
-                    <div className="flex align-bottom">
-                      <LogoutIcon />
-                      <span className="ml-2">Log Out</span>
-                    </div>
-                  </DropdownItem>
-                </DropdownMenu>
-              </Dropdown>
+              <Fade>
+                <Dropdown
+                  open={toggle}
+                  toggle={() => setToggle(!toggle)}
+                  size="md"
+                  className="mr-2"
+                >
+                  <DropdownToggle
+                    nav
+                    caret
+                  >{`Hi, ${user.email}`}</DropdownToggle>
+                  <DropdownMenu small right>
+                    <DropdownItem
+                      onClick={() =>
+                        logout({ returnTo: window.location.origin })
+                      }
+                    >
+                      <div className="flex align-bottom">
+                        <LogoutIcon />
+                        <span className="ml-2">Log Out</span>
+                      </div>
+                    </DropdownItem>
+                  </DropdownMenu>
+                </Dropdown>
+              </Fade>
             </NavItem>
           ) : (
             <LoginButton />
