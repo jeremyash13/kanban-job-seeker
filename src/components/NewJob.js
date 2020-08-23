@@ -47,19 +47,23 @@ function NewJob({ createNewJob }) {
           <ModalHeader>Add New Job</ModalHeader>
           <ModalBody>
             <Form>
-              <FormGroup>
-                <FormInput
-                  id="#role"
-                  placeholder="Role"
-                  autoComplete="off"
-                  invalid={roleInvalid}
-                  value={roleValue}
-                  innerRef={roleRef}
-                  onChange={(e) => {
-                    setRoleValue(e.value);
-                  }}
-                />
-              </FormGroup>
+              <FormInput
+                id="#role"
+                placeholder="Role"
+                autoComplete="off"
+                invalid={roleInvalid}
+                value={roleValue}
+                innerRef={roleRef}
+                className="mb-2"
+                onKeyPress={(e) => {
+                  if (e.charCode === 13) {
+                    e.preventDefault();
+                  }
+                }}
+                onChange={(e) => {
+                  setRoleValue(e.value);
+                }}
+              />
               <FormInput
                 id="#company"
                 placeholder="Company"
@@ -67,6 +71,11 @@ function NewJob({ createNewJob }) {
                 invalid={companyInvalid}
                 value={companyValue}
                 innerRef={companyRef}
+                onKeyPress={(e) => {
+                  if (e.charCode === 13) {
+                    e.preventDefault();
+                  }
+                }}
                 onChange={(e) => {
                   setCompanyValue(e.value);
                 }}

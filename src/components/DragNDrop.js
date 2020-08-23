@@ -26,7 +26,9 @@ function DragNDrop() {
   const GlobalState = Global.useContainer();
 
   const [columns, setColumns] = useState({});
+
   const [showInterviewingModal, setShowInterviewingModal] = useState(false);
+  const [showOffersModal, setShowOffersModal] = useState(false);
 
   const [editingItemIndex, setEditingItemIndex] = useState(null);
 
@@ -73,6 +75,81 @@ function DragNDrop() {
               value={value}
               // invalid={roleInvalid}
               innerRef={inputRef}
+              onKeyPress={(e) => {
+                if (e.charCode === 13) {
+                  e.preventDefault();
+                }
+              }}
+              onChange={(e) => {
+                setValue(e.value);
+              }}
+            />
+          </Form>
+          <div className="flex">
+            <Button
+              outline
+              pill
+              size="sm"
+              theme="primary"
+              className="ml-auto mt-2"
+              onClick={() => {
+                clickHandler();
+              }}
+            >
+              Save
+            </Button>
+          </div>
+        </ModalBody>
+      </Modal>
+    );
+  };
+
+  const OffersModal = () => {
+    const [value, setValue] = useState("");
+    const inputRef = useRef();
+    const clickHandler = () => {
+      const newState = [...offersColumn];
+      newState[editingItemIndex].note = inputRef.current.value;
+      newState[editingItemIndex].status = "offers";
+
+      setColumns({
+        [appliedID]: {
+          name: "Applied",
+          items: appliedColumn,
+        },
+        [interviewingID]: {
+          name: "Interviewing",
+          items: interviewingColumn,
+        },
+        [offersID]: {
+          name: "Offers",
+          items: [...newState],
+        },
+      });
+      updateItemInDB(newState[editingItemIndex]);
+      setShowOffersModal(false);
+    };
+    return (
+      <Modal
+        open={true}
+        toggle={() => setShowOffersModal(!showOffersModal)}
+        centered
+      >
+        <ModalHeader>Add note</ModalHeader>
+        <ModalBody>
+          <Form>
+            <FormInput
+              id="#role"
+              placeholder="What are your thoughts about the offer?"
+              autoComplete="off"
+              value={value}
+              // invalid={roleInvalid}
+              innerRef={inputRef}
+              onKeyPress={(e) => {
+                if (e.charCode === 13) {
+                  e.preventDefault();
+                }
+              }}
               onChange={(e) => {
                 setValue(e.value);
               }}
@@ -99,13 +176,9 @@ function DragNDrop() {
 
   const updateItemInDB = (updatedItem) => {
     const url = "http://localhost:4000/updateitem";
-    axios
-      .put(url, {
-        ...updatedItem,
-      })
-      .then((res) => {
-        console.log(res);
-      });
+    axios.put(url, {
+      ...updatedItem,
+    });
   };
 
   const spliceItem = (result) => {
@@ -170,6 +243,7 @@ function DragNDrop() {
       }
       if (destination.droppableId === "offers") {
         // trigger a modal
+        setShowOffersModal(true);
         spliceItem(result, columns);
       }
     } else {
@@ -234,6 +308,7 @@ function DragNDrop() {
       <NewJob createNewJob={createNewJob} />
       <div className="flex user-select-none">
         {showInterviewingModal && <InterviewingModal />}
+        {showOffersModal && <OffersModal />}
         <DragDropContext
           onDragEnd={(result) => onDragEnd(result, columns, setColumns)}
         >
