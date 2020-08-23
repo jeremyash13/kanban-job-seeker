@@ -147,6 +147,9 @@ function DragNDrop() {
       offersColumn.splice(destItemIndex, 0, sourceItem);
     }
 
+    sourceItem.status = destinationDropId;
+    // update item in db
+    updateItemInDB(sourceItem);
     renderColumns();
   };
 
@@ -160,17 +163,14 @@ function DragNDrop() {
 
       if (destination.droppableId === "applied") {
         spliceItem(result, columns);
-        // update item (status and info fields) in DB in the background
       }
       if (destination.droppableId === "interviewing") {
         setShowInterviewingModal(true);
         spliceItem(result, columns);
-        // update item (status and info fields) in DB in the background
       }
       if (destination.droppableId === "offers") {
         // trigger a modal
         spliceItem(result, columns);
-        // update item (status and info fields) in DB in the background
       }
     } else {
       // if item moved positions in the same column
@@ -276,7 +276,6 @@ function DragNDrop() {
                                       padding: "16px",
                                       margin: "0 0 8px 0",
                                       minHeight: "50px",
-                                      // border: "solid 1px rgba(0,0,0,.1)",
                                       backgroundColor: "white",
                                       boxShadow: snapshot.isDragging
                                         ? "0 10px 20px rgba(0, 0, 0, 0.1), 0 4px 4px 0 rgba(0, 0, 0, 0.10)"
@@ -284,11 +283,15 @@ function DragNDrop() {
                                       ...provided.draggableProps.style,
                                     }}
                                   >
-                                    <h6>{item.role}</h6>
-                                    <div className="text-gray-500 font-normal">
+                                    <h6 className="mb-0">{item.role}</h6>
+                                    <div className="text-gray-500 text-sm font-normal mb-2">
                                       {item.company}
                                     </div>
-                                    <div>{`${item.note ? item.note : ""}`}</div>
+                                    {item.note && (
+                                      <div className="text-black text-sm font-normal">
+                                        {item.note}
+                                      </div>
+                                    )}
                                   </div>
                                 );
                               }}
