@@ -10,9 +10,9 @@ import {
   Form,
   FormInput,
   FormGroup,
-  FormFeedback,
   Button,
 } from "shards-react";
+import { ObjectId } from "mongodb";
 
 function NewJob({ createNewJob }) {
   const [toggle, setToggle] = useState(false);
@@ -31,16 +31,9 @@ function NewJob({ createNewJob }) {
     setToggle(!toggle);
   };
 
-  const submitNewToDB = async (user) => {
+  const submitNewToDB = async (newJobItem) => {
     axios
-      .put("http://localhost:4000/items", {
-        _id: null,
-        user: user.email,
-        role: roleRef.current.value,
-        company: companyRef.current.value,
-        status: "applied",
-        info: null,
-      })
+      .put("http://localhost:4000/items", newJobItem)
       .then((res) => console.log(res.data.message));
   };
 
@@ -98,17 +91,16 @@ function NewJob({ createNewJob }) {
                     setCompanyInvalid(true);
                   }
                   if (!roleInvalid && !companyInvalid) {
-                    createNewJob([
-                      {
-                        _id: uuid(),
-                        user: user.email,
-                        role: roleRef.current.value,
-                        company: companyRef.current.value,
-                        status: "applied",
-                        info: null,
-                      },
-                    ]);
-                    submitNewToDB(user);
+                    const newJobItem = {
+                      _id: ObjectId(),
+                      user: user.email,
+                      role: roleRef.current.value,
+                      company: companyRef.current.value,
+                      status: "applied",
+                      note: null,
+                    };
+                    createNewJob([newJobItem]);
+                    submitNewToDB(newJobItem);
                     toggleFunc();
                   }
                 }}

@@ -51,15 +51,15 @@ async function run() {
       });
       app.put("/items", async (req, res) => {
         try {
-          const { user, role, company, status, info } = req.body;
+          const { user, role, company, status, note } = req.body;
 
           let newDoc = {
-            _id: ObjectId,
+            _id: ObjectId(),
             user: user,
             role: role,
             company: company,
             status: status,
-            info: info,
+            note: note,
           };
 
           const database = client.db("seekr");
@@ -67,6 +67,33 @@ async function run() {
 
           const result = await collection
             .insertOne(newDoc)
+            .then(() => res.json({ message: "SUCCESSFUL PUT REQUEST" }));
+        } catch (err) {
+          console.log(err);
+        }
+      });
+      app.put("/updateitem", async (req, res) => {
+        try {
+          const { _id, user, role, company, status, note } = req.body;
+
+          const database = client.db("seekr");
+          const collection = database.collection("items");
+
+          collection
+            .updateOne(
+              {
+                _id: ObjectId(_id),
+              },
+              {
+                $set: {
+                  user: user,
+                  role: role,
+                  company: company,
+                  status: status,
+                  note: note,
+                },
+              }
+            )
             .then(() => res.json({ message: "SUCCESSFUL PUT REQUEST" }));
         } catch (err) {
           console.log(err);

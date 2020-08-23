@@ -35,6 +35,28 @@ function DragNDrop() {
   const InterviewingModal = () => {
     const [value, setValue] = useState("");
     const inputRef = useRef();
+    const clickHandler = () => {
+      const newState = [...interviewingColumn];
+      newState[editingItemIndex].note = inputRef.current.value;
+      newState[editingItemIndex].status = "interviewing";
+
+      setColumns({
+        [appliedID]: {
+          name: "Applied",
+          items: appliedColumn,
+        },
+        [interviewingID]: {
+          name: "Interviewing",
+          items: [...newState],
+        },
+        [offersID]: {
+          name: "Offers",
+          items: offersColumn,
+        },
+      });
+      updateItemInDB(newState[editingItemIndex]);
+      setShowInterviewingModal(false);
+    };
     return (
       <Modal
         open={true}
@@ -64,24 +86,7 @@ function DragNDrop() {
               theme="primary"
               className="ml-auto mt-2"
               onClick={() => {
-                const newState = [...interviewingColumn]
-                newState[editingItemIndex].role = inputRef.current.value;
-
-                setColumns({
-                  [appliedID]: {
-                    name: "Applied",
-                    items: appliedColumn,
-                  },
-                  [interviewingID]: {
-                    name: "Interviewing",
-                    items: [...newState],
-                  },
-                  [offersID]: {
-                    name: "Offers",
-                    items: offersColumn,
-                  },
-                });
-                setShowInterviewingModal(false)
+                clickHandler();
               }}
             >
               Save
@@ -92,21 +97,19 @@ function DragNDrop() {
     );
   };
 
-  const modifyItem = (newState, cb) => {
-    // const { field, value } = newState;
-    // const index = GlobalState.editingItemIndex;
-    // appliedColumn[index].role = value;
-    // renderColumns();
+  const updateItemInDB = (updatedItem) => {
+    const url = "http://localhost:4000/updateitem";
+    axios
+      .put(url, {
+        ...updatedItem,
+      })
+      .then((res) => {
+        console.log(res);
+      });
   };
 
-  const spliceItem = (result, columns) => {
+  const spliceItem = (result) => {
     const { source, destination } = result;
-
-    const sourceColumn = columns[source.droppableId]; // THESE NEED TO BE STORED IN GLOBAL STATE
-    const sourceItems = [...sourceColumn.items]; // THESE NEED TO BE STORED IN GLOBAL STATE
-    const destItemIndex = destination.index; // THESE NEED TO BE STORED IN GLOBAL STATE
-
-    const [sourceItem] = sourceItems.splice(source.index, 1);
 
     let sourceDropId =
       source.droppableId === "applied"
@@ -125,20 +128,23 @@ function DragNDrop() {
         ? "offers"
         : null;
 
+    const destItemIndex = destination.index;
+    let sourceItem;
+
+    if (sourceDropId === "applied") {
+      [sourceItem] = appliedColumn.splice(source.index, 1);
+    } else if (sourceDropId === "interviewing") {
+      [sourceItem] = interviewingColumn.splice(source.index, 1);
+    } else if (sourceDropId === "offers") {
+      [sourceItem] = offersColumn.splice(source.index, 1);
+    }
+
     if (destinationDropId === "applied") {
       appliedColumn.splice(destItemIndex, 0, sourceItem);
     } else if (destinationDropId === "interviewing") {
       interviewingColumn.splice(destItemIndex, 0, sourceItem);
     } else if (destinationDropId === "offers") {
       offersColumn.splice(destItemIndex, 0, sourceItem);
-    }
-
-    if (sourceDropId === "applied") {
-      appliedColumn.splice(source.index, 1);
-    } else if (sourceDropId === "interviewing") {
-      interviewingColumn.splice(source.index, 1);
-    } else if (sourceDropId === "offers") {
-      offersColumn.splice(source.index, 1);
     }
 
     renderColumns();
@@ -151,25 +157,24 @@ function DragNDrop() {
     if (source.droppableId !== destination.droppableId) {
       // item moved columns
       setEditingItemIndex(destination.index);
+
       if (destination.droppableId === "applied") {
-        // update item (status and info fields) in DB in the background
         spliceItem(result, columns);
+        // update item (status and info fields) in DB in the background
       }
       if (destination.droppableId === "interviewing") {
-        // trigger a modal
         setShowInterviewingModal(true);
         spliceItem(result, columns);
-
-        // modify item in state (status and info fields) for instant UI update
-
         // update item (status and info fields) in DB in the background
       }
       if (destination.droppableId === "offers") {
         // trigger a modal
         spliceItem(result, columns);
-        // modify item in state (status and info fields) for instant UI update
         // update item (status and info fields) in DB in the background
       }
+    } else {
+      // if item moved positions in the same column
+      spliceItem(result, columns);
     }
   };
 
@@ -219,6 +224,7 @@ function DragNDrop() {
 
   useEffect(() => {
     if (user) {
+      // wait for user obj to be defined before fetching items for that user
       fetchItems(user);
     }
   }, [user]);
@@ -282,6 +288,7 @@ function DragNDrop() {
                                     <div className="text-gray-500 font-normal">
                                       {item.company}
                                     </div>
+                                    <div>{`${item.note ? item.note : ""}`}</div>
                                   </div>
                                 );
                               }}
