@@ -9,6 +9,7 @@ import {
   Form,
   FormInput,
   Button,
+  Fade,
 } from "shards-react";
 import Global from "../state/Global";
 
@@ -286,10 +287,11 @@ function DragNDrop() {
                         className="rounded overflow-y-scroll custom-scrollbar"
                         style={{
                           background: snapshot.isDraggingOver ? "#007bff" : "",
-                          boxShadow:
-                            "inset 0 0 40px rgba(0,0,0,.1), inset 0 0 4px rgba(0,0,0,.25)",
+                          boxShadow: snapshot.isDraggingOver
+                            ? "inset 0 0 40px rgba(0, 0, 0,.20), inset 0 0 4px rgba(0, 0, 0,.5)"
+                            : "inset 0 0 40px rgba(0, 123, 255,.1), inset 0 0 4px rgba(0, 0, 0,.25)",
                           padding: "4px",
-                          width: "250px",
+                          width: "275px",
                           minHeight: "500px",
                           maxHeight: "calc(100vh - 300px)",
                         }}
@@ -324,7 +326,7 @@ function DragNDrop() {
                                       <div
                                         className="absolute right-0 top-10 transform -translate-x-4 cursor-pointer text-gray-400 hover:text-black transition-colors duration-500 ease-in-out"
                                         onClick={() => {
-                                          setEditingItemIndex(index)
+                                          setEditingItemIndex(index);
                                           setNoteModalColumn(interviewingID);
                                           setShowNoteModal(true);
                                         }}

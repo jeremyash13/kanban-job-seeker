@@ -101,7 +101,7 @@ function NewJob({ createNewJob }) {
                   }
                   if (!roleInvalid && !companyInvalid) {
                     const newJobItem = {
-                      _id: ObjectId(),
+                      _id: ObjectId().toString(),
                       user: user.email,
                       role: roleRef.current.value,
                       company: companyRef.current.value,
