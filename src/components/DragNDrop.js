@@ -29,40 +29,65 @@ function DragNDrop() {
 
   const [showInterviewingModal, setShowInterviewingModal] = useState(false);
   const [showOffersModal, setShowOffersModal] = useState(false);
+  const [showNoteModal, setShowNoteModal] = useState(false);
+  const [noteModalColumn, setNoteModalColumn] = useState(null);
 
   const [editingItemIndex, setEditingItemIndex] = useState(null);
 
   const { user } = useAuth0();
 
-  const InterviewingModal = () => {
+  const NoteModal = ({ column }) => {
     const [value, setValue] = useState("");
     const inputRef = useRef();
     const clickHandler = () => {
-      const newState = [...interviewingColumn];
-      newState[editingItemIndex].note = inputRef.current.value;
-      newState[editingItemIndex].status = "interviewing";
+      let newState;
+      if (column === "interviewing") {
+        newState = [...interviewingColumn];
+        newState[editingItemIndex].note = inputRef.current.value;
+        newState[editingItemIndex].status = "interviewing";
 
-      setColumns({
-        [appliedID]: {
-          name: "Applied",
-          items: appliedColumn,
-        },
-        [interviewingID]: {
-          name: "Interviewing",
-          items: [...newState],
-        },
-        [offersID]: {
-          name: "Offers",
-          items: offersColumn,
-        },
-      });
+        setColumns({
+          [appliedID]: {
+            name: "Applied",
+            items: appliedColumn,
+          },
+          [interviewingID]: {
+            name: "Interviewing",
+            items: [...newState],
+          },
+          [offersID]: {
+            name: "Offers",
+            items: offersColumn,
+          },
+        });
+      } else if (column === "offers") {
+        newState = [...offersColumn];
+        newState[editingItemIndex].note = inputRef.current.value;
+        newState[editingItemIndex].status = "offers";
+
+        setColumns({
+          [appliedID]: {
+            name: "Applied",
+            items: appliedColumn,
+          },
+          [interviewingID]: {
+            name: "Interviewing",
+            items: interviewingColumn,
+          },
+          [offersID]: {
+            name: "Offers",
+            items: [...newState],
+          },
+        });
+      }
+
       updateItemInDB(newState[editingItemIndex]);
-      setShowInterviewingModal(false);
+      setShowNoteModal(false);
     };
     return (
       <Modal
         open={true}
-        toggle={() => setShowInterviewingModal(!showInterviewingModal)}
+        toggle={() => setShowNoteModal(!showNoteModal)}
         centered
       >
         <ModalHeader>Add note</ModalHeader>
@@ -70,77 +95,13 @@ function DragNDrop() {
           <Form>
             <FormInput
               id="#role"
-              placeholder="When is your interview?"
-              autoComplete="off"
-              value={value}
-              // invalid={roleInvalid}
-              innerRef={inputRef}
-              onKeyPress={(e) => {
-                if (e.charCode === 13) {
-                  e.preventDefault();
-                }
-              }}
-              onChange={(e) => {
-                setValue(e.value);
-              }}
-            />
-          </Form>
-          <div className="flex">
-            <Button
-              outline
-              pill
-              size="sm"
-              theme="primary"
-              className="ml-auto mt-2"
-              onClick={() => {
-                clickHandler();
-              }}
-            >
-              Save
-            </Button>
-          </div>
-        </ModalBody>
-      </Modal>
-    );
-  };
-
-  const OffersModal = () => {
-    const [value, setValue] = useState("");
-    const inputRef = useRef();
-    const clickHandler = () => {
-      const newState = [...offersColumn];
-      newState[editingItemIndex].note = inputRef.current.value;
-      newState[editingItemIndex].status = "offers";
-
-      setColumns({
-        [appliedID]: {
-          name: "Applied",
-          items: appliedColumn,
-        },
-        [interviewingID]: {
-          name: "Interviewing",
-          items: interviewingColumn,
-        },
-        [offersID]: {
-          name: "Offers",
-          items: [...newState],
-        },
-      });
-      updateItemInDB(newState[editingItemIndex]);
-      setShowOffersModal(false);
-    };
-    return (
-      <Modal
-        open={true}
-        toggle={() => setShowOffersModal(!showOffersModal)}
-        centered
-      >
-        <ModalHeader>Add note</ModalHeader>
-        <ModalBody>
-          <Form>
-            <FormInput
-              id="#role"
-              placeholder="What are your thoughts about the offer?"
+              placeholder={`${
+                column === "interviewing"
+                  ? "When is your interview?"
+                  : column === "offers"
+                  ? "What are your thoughts about the offer?"
+                  : ""
+              }`}
               autoComplete="off"
               value={value}
               // invalid={roleInvalid}
@@ -233,17 +194,18 @@ function DragNDrop() {
     if (source.droppableId !== destination.droppableId) {
       // item moved columns
       setEditingItemIndex(destination.index);
+      setNoteModalColumn(destination.droppableId);
 
       if (destination.droppableId === "applied") {
         spliceItem(result, columns);
       }
       if (destination.droppableId === "interviewing") {
-        setShowInterviewingModal(true);
+        setShowNoteModal(true);
         spliceItem(result, columns);
       }
       if (destination.droppableId === "offers") {
         // trigger a modal
-        setShowOffersModal(true);
+        setShowNoteModal(true);
         spliceItem(result, columns);
       }
     } else {
@@ -307,8 +269,7 @@ function DragNDrop() {
     <>
       <NewJob createNewJob={createNewJob} />
       <div className="flex user-select-none">
-        {showInterviewingModal && <InterviewingModal />}
-        {showOffersModal && <OffersModal />}
+        {showNoteModal && <NoteModal column={noteModalColumn} />}
         <DragDropContext
           onDragEnd={(result) => onDragEnd(result, columns, setColumns)}
         >
@@ -322,7 +283,7 @@ function DragNDrop() {
                       <div
                         {...provided.droppableProps}
                         ref={provided.innerRef}
-                        className="rounded"
+                        className="rounded overflow-y-scroll custom-scrollbar"
                         style={{
                           background: snapshot.isDraggingOver ? "#007bff" : "",
                           boxShadow:
@@ -330,6 +291,7 @@ function DragNDrop() {
                           padding: "4px",
                           width: "250px",
                           minHeight: "500px",
+                          maxHeight: "calc(100vh - 300px)",
                         }}
                       >
                         {column.items.map((item, index) => {
@@ -345,7 +307,7 @@ function DragNDrop() {
                                     ref={provided.innerRef}
                                     {...provided.draggableProps}
                                     {...provided.dragHandleProps}
-                                    className="rounded"
+                                    className="rounded relative"
                                     style={{
                                       userSelect: "none",
                                       padding: "16px",
@@ -358,6 +320,55 @@ function DragNDrop() {
                                       ...provided.draggableProps.style,
                                     }}
                                   >
+                                    {item.status === "interviewing" && (
+                                      <div
+                                        className="absolute right-0 top-10 transform -translate-x-4 cursor-pointer text-gray-400 hover:text-black transition-colors duration-500 ease-in-out"
+                                        onClick={() => {
+                                          setEditingItemIndex(index)
+                                          setNoteModalColumn(interviewingID);
+                                          setShowNoteModal(true);
+                                        }}
+                                      >
+                                        <svg
+                                          width="1em"
+                                          height="1em"
+                                          viewBox="0 0 16 16"
+                                          className="bi bi-pencil-square"
+                                          fill="currentColor"
+                                          xmlns="http://www.w3.org/2000/svg"
+                                        >
+                                          <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456l-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                                          <path
+                                            fillRule="evenodd"
+                                            d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"
+                                          />
+                                        </svg>
+                                      </div>
+                                    )}
+                                    {item.status === "offers" && (
+                                      <div
+                                        className="absolute right-0 top-10 transform -translate-x-4 cursor-pointer text-gray-400 hover:text-black transition-colors duration-500 ease-in-out"
+                                        onClick={() => {
+                                          setNoteModalColumn(offersID);
+                                          setShowNoteModal(true);
+                                        }}
+                                      >
+                                        <svg
+                                          width="1em"
+                                          height="1em"
+                                          viewBox="0 0 16 16"
+                                          className="bi bi-pencil-square"
+                                          fill="currentColor"
+                                          xmlns="http://www.w3.org/2000/svg"
+                                        >
+                                          <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456l-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                                          <path
+                                            fillRule="evenodd"
+                                            d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"
+                                          />
+                                        </svg>
+                                      </div>
+                                    )}
                                     <h6 className="mb-0">{item.role}</h6>
                                     <div className="text-gray-500 text-sm font-normal mb-2">
                                       {item.company}

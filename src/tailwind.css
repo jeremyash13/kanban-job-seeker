@@ -15,10 +15,23 @@
 * {
   font-family: CircularBook !important;
 }
-h1, h2, h3, h4, h5, h6 {
-    font-family: CircularBold !important;
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: CircularBold !important;
 }
 body {
-    min-height: 100vh;
-    background-color: #f7f7f7;
+  min-height: 100vh;
+  background-color: #f7f7f7;
+}
+::-webkit-scrollbar {
+  /* Chrome/Safari/Edge */
+  width: 0;
+}
+.custom-scrollbar {
+  /* Firefox */
+  scrollbar-width: none;
 }
