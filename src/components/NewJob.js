@@ -1,6 +1,5 @@
 import React, { useState, useRef } from "react";
 import axios from "axios";
-import { v4 as uuid } from "uuid";
 import { useAuth0 } from "@auth0/auth0-react";
 
 import {
@@ -9,7 +8,6 @@ import {
   ModalHeader,
   Form,
   FormInput,
-  FormGroup,
   Button,
 } from "shards-react";
 import { ObjectId } from "mongodb";
@@ -34,7 +32,6 @@ function NewJob({ createNewJob }) {
   const submitNewToDB = async (newJobItem) => {
     axios
       .put("http://localhost:4000/items", newJobItem)
-      .then((res) => console.log(res.data.message));
   };
 
   return (
@@ -106,7 +103,7 @@ function NewJob({ createNewJob }) {
                       role: roleRef.current.value,
                       company: companyRef.current.value,
                       status: "applied",
-                      note: null,
+                      note: "",
                     };
                     createNewJob([newJobItem]);
                     submitNewToDB(newJobItem);

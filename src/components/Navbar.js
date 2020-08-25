@@ -2,13 +2,13 @@ import React, { useState } from "react";
 import {
   Nav,
   NavItem,
-  NavLink,
   Button,
   Dropdown,
   DropdownItem,
   DropdownMenu,
   DropdownToggle,
   Fade,
+  NavLink,
 } from "shards-react";
 import { useAuth0 } from "@auth0/auth0-react";
 
@@ -47,36 +47,32 @@ function Navbar() {
   const [toggle, setToggle] = useState(false);
   return (
     <div className="flex">
-      <Nav className="w-max-content ml-auto">
+      <div className="mr-auto">
+        <h4>Simple Seek.io</h4>
+      </div>
+      <Nav>
         <NavItem>
           {isAuthenticated ? (
-            <NavItem>
-              <Fade>
-                <Dropdown
-                  open={toggle}
-                  toggle={() => setToggle(!toggle)}
-                  size="md"
-                  className="mr-2"
-                >
-                  <DropdownToggle
-                    nav
-                    caret
-                  >{`Hi, ${user.email}`}</DropdownToggle>
-                  <DropdownMenu small right>
-                    <DropdownItem
-                      onClick={() =>
-                        logout({ returnTo: window.location.origin })
-                      }
-                    >
-                      <div className="flex align-bottom">
-                        <LogoutIcon />
-                        <span className="ml-2">Log Out</span>
-                      </div>
-                    </DropdownItem>
-                  </DropdownMenu>
-                </Dropdown>
-              </Fade>
-            </NavItem>
+            <Fade>
+              <Dropdown
+                open={toggle}
+                toggle={() => setToggle(!toggle)}
+                size="md"
+                className="mr-2"
+              >
+                <DropdownToggle nav caret>{`Hi, ${user.email}`}</DropdownToggle>
+                <DropdownMenu small right>
+                  <DropdownItem
+                    onClick={() => logout({ returnTo: window.location.origin })}
+                  >
+                    <div className="flex align-bottom">
+                      <LogoutIcon />
+                      <span className="ml-2">Log Out</span>
+                    </div>
+                  </DropdownItem>
+                </DropdownMenu>
+              </Dropdown>
+            </Fade>
           ) : (
             <LoginButton />
           )}

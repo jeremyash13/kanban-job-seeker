@@ -9,11 +9,11 @@ import {
   Form,
   FormInput,
   Button,
-  Fade,
 } from "shards-react";
-import Global from "../state/Global";
+// import Global from "../state/Global";
 
 import NewJob from "./NewJob";
+import TrashCan from "./TrashCan";
 
 const appliedID = "applied";
 const interviewingID = "interviewing";
@@ -24,12 +24,10 @@ let interviewingColumn = [];
 let offersColumn = [];
 
 function DragNDrop() {
-  const GlobalState = Global.useContainer();
+  // const GlobalState = Global.useContainer();
 
   const [columns, setColumns] = useState({});
 
-  const [showInterviewingModal, setShowInterviewingModal] = useState(false);
-  const [showOffersModal, setShowOffersModal] = useState(false);
   const [showNoteModal, setShowNoteModal] = useState(false);
   const [noteModalColumn, setNoteModalColumn] = useState(null);
 
@@ -138,9 +136,12 @@ function DragNDrop() {
 
   const updateItemInDB = (updatedItem) => {
     const url = "http://localhost:4000/updateitem";
-    axios.put(url, {
-      ...updatedItem,
-    });
+    axios.put(url, updatedItem);
+  };
+
+  const deleteItemInDB = (targetItem) => {
+    const url = "http://localhost:4000/deleteitem";
+    axios.post(url, targetItem);
   };
 
   const spliceItem = (result) => {
@@ -153,6 +154,8 @@ function DragNDrop() {
         ? "interviewing"
         : source.droppableId === "offers"
         ? "offers"
+        : source.droppableId === "trash"
+        ? "trash"
         : null;
     let destinationDropId =
       destination.droppableId === "applied"
@@ -161,6 +164,8 @@ function DragNDrop() {
         ? "interviewing"
         : destination.droppableId === "offers"
         ? "offers"
+        : destination.droppableId === "trash"
+        ? "trash"
         : null;
 
     const destItemIndex = destination.index;
@@ -180,6 +185,8 @@ function DragNDrop() {
       interviewingColumn.splice(destItemIndex, 0, sourceItem);
     } else if (destinationDropId === "offers") {
       offersColumn.splice(destItemIndex, 0, sourceItem);
+    } else if (destinationDropId === "trash") {
+      deleteItemInDB(sourceItem);
     }
 
     sourceItem.status = destinationDropId;
@@ -188,7 +195,7 @@ function DragNDrop() {
     renderColumns();
   };
 
-  const onDragEnd = (result, columns) => {
+  const onDragEnd = (result) => {
     const { source, destination } = result;
     if (!result.destination) return;
 
@@ -198,20 +205,24 @@ function DragNDrop() {
       setNoteModalColumn(destination.droppableId);
 
       if (destination.droppableId === "applied") {
-        spliceItem(result, columns);
+        spliceItem(result);
       }
       if (destination.droppableId === "interviewing") {
         setShowNoteModal(true);
-        spliceItem(result, columns);
+        spliceItem(result);
       }
       if (destination.droppableId === "offers") {
         // trigger a modal
         setShowNoteModal(true);
-        spliceItem(result, columns);
+        spliceItem(result);
+      }
+      if (destination.droppableId === "trash") {
+        // trigger a modal
+        spliceItem(result);
       }
     } else {
       // if item moved positions in the same column
-      spliceItem(result, columns);
+      spliceItem(result);
     }
   };
 
@@ -394,6 +405,7 @@ function DragNDrop() {
               </div>
             );
           })}
+          <TrashCan />
         </DragDropContext>
       </div>
     </>

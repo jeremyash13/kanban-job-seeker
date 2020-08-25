@@ -4,6 +4,9 @@ module.exports = {
     extend: {
       maxWidth: {
         "max-content": "max-content"
+      },
+      inset: {
+        "1/2": "50%"
       }
     },
   },

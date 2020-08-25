@@ -51,10 +51,10 @@ async function run() {
       });
       app.put("/items", async (req, res) => {
         try {
-          const { user, role, company, status, note } = req.body;
+          const { _id, user, role, company, status, note } = req.body;
 
           let newDoc = {
-            _id: ObjectId(),
+            _id: ObjectId(_id.toString()),
             user: user,
             role: role,
             company: company,
@@ -95,6 +95,22 @@ async function run() {
               }
             )
             .then(() => res.json({ message: "SUCCESSFUL PUT REQUEST" }));
+        } catch (err) {
+          console.log(err);
+        }
+      });
+      app.post("/deleteitem", async (req, res) => {
+        try {
+          const { _id, user } = req.body;
+
+          const database = client.db("seekr");
+          const collection = database.collection("items");
+
+          collection
+            .deleteOne({
+              _id: ObjectId(_id.toString()),
+            })
+            .then(() => res.json({ message: "SUCCESSFUL DELETE REQUEST" }));
         } catch (err) {
           console.log(err);
         }

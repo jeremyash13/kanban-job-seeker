@@ -13,7 +13,6 @@ function App() {
       <Fade>
         <div className="p-4">
           <Navbar />
-          <h2>Job Seeker</h2>
           <DragNDrop />
         </div>
       </Fade>
