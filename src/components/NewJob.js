@@ -1,6 +1,8 @@
 import React, { useState, useRef } from "react";
 import axios from "axios";
 import { useAuth0 } from "@auth0/auth0-react";
+import Global from "../state/Global";
+import { ObjectId } from "mongodb";
 
 import {
   Modal,
@@ -10,9 +12,10 @@ import {
   FormInput,
   Button,
 } from "shards-react";
-import { ObjectId } from "mongodb";
 
 function NewJob({ createNewJob }) {
+  const GlobalState = Global.useContainer();
+
   const [toggle, setToggle] = useState(false);
   const [roleValue, setRoleValue] = useState("");
   const [companyValue, setCompanyValue] = useState("");
@@ -30,8 +33,9 @@ function NewJob({ createNewJob }) {
   };
 
   const submitNewToDB = async (newJobItem) => {
+    const url = GlobalState.newJobItemUrl
     axios
-      .put("http://localhost:4000/items", newJobItem)
+      .put(url, newJobItem)
   };
 
   return (

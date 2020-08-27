@@ -10,7 +10,7 @@ import {
   FormInput,
   Button,
 } from "shards-react";
-// import Global from "../state/Global";
+import Global from "../state/Global";
 
 import NewJob from "./NewJob";
 import TrashCan from "./TrashCan";
@@ -24,7 +24,7 @@ let interviewingColumn = [];
 let offersColumn = [];
 
 function DragNDrop() {
-  // const GlobalState = Global.useContainer();
+  const GlobalState = Global.useContainer();
 
   const [columns, setColumns] = useState({});
 
@@ -135,12 +135,12 @@ function DragNDrop() {
   };
 
   const updateItemInDB = (updatedItem) => {
-    const url = "http://localhost:4000/updateitem";
+    const url = GlobalState.updateItemUrl;
     axios.put(url, updatedItem);
   };
 
   const deleteItemInDB = (targetItem) => {
-    const url = "http://localhost:4000/deleteitem";
+    const url = GlobalState.deleteItemUrl;
     axios.post(url, targetItem);
   };
 
@@ -256,7 +256,7 @@ function DragNDrop() {
   };
 
   const fetchItems = (user) => {
-    const url = "http://localhost:4000/items";
+    const url = GlobalState.getItemsUrl
 
     axios
       .post(url, {
@@ -362,6 +362,7 @@ function DragNDrop() {
                                       <div
                                         className="absolute right-0 top-10 transform -translate-x-4 cursor-pointer text-gray-400 hover:text-black transition-colors duration-500 ease-in-out"
                                         onClick={() => {
+                                          setEditingItemIndex(index);
                                           setNoteModalColumn(offersID);
                                           setShowNoteModal(true);
                                         }}
