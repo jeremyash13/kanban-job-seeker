@@ -1,0 +1,52 @@
+@tailwind base;
+
+@tailwind components;
+
+@tailwind utilities;
+
+@font-face {
+  font-family: "CircularBook";
+  src: url("./src/fonts/circular/circular-book.otf");
+}
+@font-face {
+  font-family: "CircularBold";
+  src: url("./src/fonts/circular/circular-bold.otf");
+}
+
+* {
+  font-family: CircularBook !important;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: CircularBold !important;
+}
+body {
+  min-height: 100vh;
+  background-color: #f7f7f7;
+}
+::-webkit-scrollbar {
+  /* Chrome/Safari/Edge */
+  width: 0;
+}
+.custom-scrollbar {
+  /* Firefox */
+  scrollbar-width: none;
+}
+
+.hero-img {
+  height: 700px;
+  background-image: url("./src/images/hero-stock.jpg");
+  background-position-y: bottom;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+.hero-overlay {
+  background-color: rgba(0, 123, 255, 0.8);
+}
+.hero-wavy {
+  /* filter: drop-shadow(0 0 50px rgba(0,0,0,1)); */
+}

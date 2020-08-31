@@ -1,7 +1,14 @@
-/**
- * Implement Gatsby's Browser APIs in this file.
- *
- * See: https://www.gatsbyjs.org/docs/browser-apis/
- */
+import React from "react"
+import { Auth0Provider } from "@auth0/auth0-react"
 
-// You can delete this file if you're not using it
+// import { navigate } from "gatsby"
+
+export const wrapRootElement = ({ element }) => (
+  <Auth0Provider
+    domain="dev-l1stdfne.us.auth0.com"
+    clientId="qHGoa91ym1iXRSiC8QOZD1IoRRdsqCm2"
+    redirectUri={window.location.origin + "/app"}
+  >
+    {element}
+  </Auth0Provider>
+)
