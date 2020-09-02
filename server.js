@@ -49,7 +49,7 @@ async function run() {
           console.log(err);
         }
       });
-      app.put("/items", async (req, res) => {
+      app.post("/newitem", async (req, res) => {
         try {
           const { _id, user, role, company, status, note } = req.body;
 
@@ -72,7 +72,7 @@ async function run() {
           console.log(err);
         }
       });
-      app.put("/updateitem", async (req, res) => {
+      app.post("/updateitem", async (req, res) => {
         try {
           const { _id, user, role, company, status, note } = req.body;
 

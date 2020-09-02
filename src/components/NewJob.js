@@ -2,7 +2,7 @@ import React, { useState, useRef } from "react"
 import axios from "axios"
 import { useAuth0 } from "@auth0/auth0-react"
 import Global from "../state/Global"
-import { ObjectID as ObjectId } from "bson-objectid"
+import ObjectID from "bson-objectid"
 
 import {
   Modal,
@@ -34,7 +34,9 @@ function NewJob({ createNewJob }) {
 
   const submitNewToDB = async newJobItem => {
     const url = GlobalState.newJobItemUrl
-    axios.put(url, newJobItem)
+    axios.post(url, newJobItem).catch(err => {
+      console.log(err)
+    })
   }
 
   return (
@@ -99,9 +101,9 @@ function NewJob({ createNewJob }) {
                   } else {
                     setCompanyInvalid(true)
                   }
-                  if (!roleInvalid && !companyInvalid) {
+                  if (!(roleInvalid && companyInvalid)) {
                     const newJobItem = {
-                      _id: ObjectId().toString(),
+                      _id: ObjectID().toString(),
                       user: user.email,
                       role: roleRef.current.value,
                       company: companyRef.current.value,

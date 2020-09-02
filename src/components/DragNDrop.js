@@ -136,7 +136,7 @@ function DragNDrop() {
 
   const updateItemInDB = (updatedItem) => {
     const url = GlobalState.updateItemUrl;
-    axios.put(url, updatedItem);
+    axios.post(url, updatedItem);
   };
 
   const deleteItemInDB = (targetItem) => {

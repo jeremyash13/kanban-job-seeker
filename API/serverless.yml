@@ -1,0 +1,17 @@
+service: aws-serverless-simpleseek
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  memorySize: 1500
+  timeout: 15
+  stage: production
+  region: us-east-1
+  profile: simpleseek
+
+functions:
+  api:
+    handler: lambda.handler
+    events:
+      - http: ANY {proxy+}
+      - http: ANY /
