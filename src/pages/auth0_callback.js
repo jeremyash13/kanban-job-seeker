@@ -1,18 +1,19 @@
-import React from "react";
-// import  { Redirect } from 'react-router-dom'
+import React, { useEffect } from "react"
+import Layout from "../components/layout"
+import { useAuth } from "react-use-auth"
 
-import Layout from "../components/layout";
+function Auth0CallbackPage() {
+  const { handleAuthentication } = useAuth()
 
-function auth0_callback() {
+  useEffect(() => {
+    handleAuthentication({ postLoginRoute: "/app" })
+  }, [])
 
-  window.location = window.location.origin + "/app"
   return (
     <Layout>
-      <h1>
-        Redirecting ...
-      </h1>
+      <h1>Redirecting ...</h1>
     </Layout>
   )
 }
 
-export default auth0_callback
+export default Auth0CallbackPage

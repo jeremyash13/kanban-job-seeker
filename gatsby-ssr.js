@@ -1,14 +1,13 @@
 import React from "react"
-import { Auth0Provider } from "@auth0/auth0-react"
-
-// import { navigate } from "gatsby"
+import { AuthProvider } from "react-use-auth"
+import { navigate } from "gatsby"
 
 export const wrapRootElement = ({ element }) => (
-  <Auth0Provider
-    domain="dev-l1stdfne.us.auth0.com"
-    clientId="qHGoa91ym1iXRSiC8QOZD1IoRRdsqCm2"
-    redirectUri={window.location.origin + "/app"}
+  <AuthProvider
+    navigate={navigate}
+    auth0_domain="dev-l1stdfne.us.auth0.com"
+    auth0_client_id="qHGoa91ym1iXRSiC8QOZD1IoRRdsqCm2"
   >
     {element}
-  </Auth0Provider>
+  </AuthProvider>
 )

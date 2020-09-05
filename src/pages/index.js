@@ -1,6 +1,6 @@
-import React from "react"
-import { Link } from "gatsby"
-import { useAuth0 } from "@auth0/auth0-react"
+import React, { useEffect } from "react"
+import { navigate } from "gatsby"
+import { useAuth } from "react-use-auth"
 
 import Layout from "../components/layout"
 import SEO from "../components/seo"
@@ -11,11 +11,17 @@ import img2 from "../images/add job.png"
 import img3 from "../images/add note interview.png"
 
 const IndexPage = () => {
-  const { isAuthenticated } = useAuth0()
+  const { isAuthenticated } = useAuth()
+  const isBrowser = typeof window !== `undefined`;
 
+  useEffect(() => {
+    if (isAuthenticated && isBrowser) {
+      navigate("/app")
+    }
+  }, [])
   return (
     <Layout>
-      <SEO title="Home" />
+      <SEO title="Get Started" />
       <Hero />
       <div className="flex flex-col mt-10 text-flatblack px-4">
         <div className="flex mx-auto mt-10">

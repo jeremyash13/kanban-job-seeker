@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useRef } from "react";
-import axios from "axios";
-import { useAuth0 } from "@auth0/auth0-react";
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import React, { useState, useEffect, useRef } from "react"
+import axios from "axios"
+import { useAuth } from "react-use-auth"
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd"
 import {
   Modal,
   ModalBody,
@@ -9,41 +9,40 @@ import {
   Form,
   FormInput,
   Button,
-} from "shards-react";
-import Global from "../state/Global";
+} from "shards-react"
+import Global from "../state/Global"
 
-import NewJob from "./NewJob";
-import TrashCan from "./TrashCan";
+import NewJob from "./NewJob"
+import TrashCan from "./TrashCan"
 
-const appliedID = "applied";
-const interviewingID = "interviewing";
-const offersID = "offers";
+const appliedID = "applied"
+const interviewingID = "interviewing"
+const offersID = "offers"
 
-let appliedColumn = [];
-let interviewingColumn = [];
-let offersColumn = [];
+let appliedColumn = []
+let interviewingColumn = []
+let offersColumn = []
 
 function DragNDrop() {
-  const GlobalState = Global.useContainer();
+  const GlobalState = Global.useContainer()
+  const { user } = useAuth()
 
-  const [columns, setColumns] = useState({});
+  const [columns, setColumns] = useState({})
 
-  const [showNoteModal, setShowNoteModal] = useState(false);
-  const [noteModalColumn, setNoteModalColumn] = useState(null);
+  const [showNoteModal, setShowNoteModal] = useState(false)
+  const [noteModalColumn, setNoteModalColumn] = useState(null)
 
-  const [editingItemIndex, setEditingItemIndex] = useState(null);
-
-  const { user } = useAuth0();
+  const [editingItemIndex, setEditingItemIndex] = useState(null)
 
   const NoteModal = ({ column }) => {
-    const [value, setValue] = useState("");
-    const inputRef = useRef();
+    const [value, setValue] = useState("")
+    const inputRef = useRef()
     const clickHandler = () => {
-      let newState;
+      let newState
       if (column === "interviewing") {
-        newState = [...interviewingColumn];
-        newState[editingItemIndex].note = inputRef.current.value;
-        newState[editingItemIndex].status = "interviewing";
+        newState = [...interviewingColumn]
+        newState[editingItemIndex].note = inputRef.current.value
+        newState[editingItemIndex].status = "interviewing"
 
         setColumns({
           [appliedID]: {
@@ -58,11 +57,11 @@ function DragNDrop() {
             name: "Offers",
             items: offersColumn,
           },
-        });
+        })
       } else if (column === "offers") {
-        newState = [...offersColumn];
-        newState[editingItemIndex].note = inputRef.current.value;
-        newState[editingItemIndex].status = "offers";
+        newState = [...offersColumn]
+        newState[editingItemIndex].note = inputRef.current.value
+        newState[editingItemIndex].status = "offers"
 
         setColumns({
           [appliedID]: {
@@ -77,12 +76,12 @@ function DragNDrop() {
             name: "Offers",
             items: [...newState],
           },
-        });
+        })
       }
 
-      updateItemInDB(newState[editingItemIndex]);
-      setShowNoteModal(false);
-    };
+      updateItemInDB(newState[editingItemIndex])
+      setShowNoteModal(false)
+    }
     return (
       <Modal
         open={true}
@@ -105,13 +104,13 @@ function DragNDrop() {
               value={value}
               // invalid={roleInvalid}
               innerRef={inputRef}
-              onKeyPress={(e) => {
+              onKeyPress={e => {
                 if (e.charCode === 13) {
-                  e.preventDefault();
+                  e.preventDefault()
                 }
               }}
-              onChange={(e) => {
-                setValue(e.value);
+              onChange={e => {
+                setValue(e.value)
               }}
             />
           </Form>
@@ -123,7 +122,7 @@ function DragNDrop() {
               theme="primary"
               className="ml-auto mt-2"
               onClick={() => {
-                clickHandler();
+                clickHandler()
               }}
             >
               Save
@@ -131,21 +130,21 @@ function DragNDrop() {
           </div>
         </ModalBody>
       </Modal>
-    );
-  };
+    )
+  }
 
-  const updateItemInDB = (updatedItem) => {
-    const url = GlobalState.updateItemUrl;
-    axios.post(url, updatedItem);
-  };
+  const updateItemInDB = updatedItem => {
+    const url = GlobalState.updateItemUrl
+    axios.post(url, updatedItem)
+  }
 
-  const deleteItemInDB = (targetItem) => {
-    const url = GlobalState.deleteItemUrl;
-    axios.post(url, targetItem);
-  };
+  const deleteItemInDB = targetItem => {
+    const url = GlobalState.deleteItemUrl
+    axios.post(url, targetItem)
+  }
 
-  const spliceItem = (result) => {
-    const { source, destination } = result;
+  const spliceItem = result => {
+    const { source, destination } = result
 
     let sourceDropId =
       source.droppableId === "applied"
@@ -156,7 +155,7 @@ function DragNDrop() {
         ? "offers"
         : source.droppableId === "trash"
         ? "trash"
-        : null;
+        : null
     let destinationDropId =
       destination.droppableId === "applied"
         ? "applied"
@@ -166,65 +165,65 @@ function DragNDrop() {
         ? "offers"
         : destination.droppableId === "trash"
         ? "trash"
-        : null;
+        : null
 
-    const destItemIndex = destination.index;
-    let sourceItem;
+    const destItemIndex = destination.index
+    let sourceItem
 
     if (sourceDropId === "applied") {
-      [sourceItem] = appliedColumn.splice(source.index, 1);
+      ;[sourceItem] = appliedColumn.splice(source.index, 1)
     } else if (sourceDropId === "interviewing") {
-      [sourceItem] = interviewingColumn.splice(source.index, 1);
+      ;[sourceItem] = interviewingColumn.splice(source.index, 1)
     } else if (sourceDropId === "offers") {
-      [sourceItem] = offersColumn.splice(source.index, 1);
+      ;[sourceItem] = offersColumn.splice(source.index, 1)
     }
 
     if (destinationDropId === "applied") {
-      appliedColumn.splice(destItemIndex, 0, sourceItem);
+      appliedColumn.splice(destItemIndex, 0, sourceItem)
     } else if (destinationDropId === "interviewing") {
-      interviewingColumn.splice(destItemIndex, 0, sourceItem);
+      interviewingColumn.splice(destItemIndex, 0, sourceItem)
     } else if (destinationDropId === "offers") {
-      offersColumn.splice(destItemIndex, 0, sourceItem);
+      offersColumn.splice(destItemIndex, 0, sourceItem)
     } else if (destinationDropId === "trash") {
-      deleteItemInDB(sourceItem);
+      deleteItemInDB(sourceItem)
     }
 
-    sourceItem.status = destinationDropId;
+    sourceItem.status = destinationDropId
     // update item in db
-    updateItemInDB(sourceItem);
-    renderColumns();
-  };
+    updateItemInDB(sourceItem)
+    renderColumns()
+  }
 
-  const onDragEnd = (result) => {
-    const { source, destination } = result;
-    if (!result.destination) return;
+  const onDragEnd = result => {
+    const { source, destination } = result
+    if (!result.destination) return
 
     if (source.droppableId !== destination.droppableId) {
       // item moved columns
-      setEditingItemIndex(destination.index);
-      setNoteModalColumn(destination.droppableId);
+      setEditingItemIndex(destination.index)
+      setNoteModalColumn(destination.droppableId)
 
       if (destination.droppableId === "applied") {
-        spliceItem(result);
+        spliceItem(result)
       }
       if (destination.droppableId === "interviewing") {
-        setShowNoteModal(true);
-        spliceItem(result);
+        setShowNoteModal(true)
+        spliceItem(result)
       }
       if (destination.droppableId === "offers") {
         // trigger a modal
-        setShowNoteModal(true);
-        spliceItem(result);
+        setShowNoteModal(true)
+        spliceItem(result)
       }
       if (destination.droppableId === "trash") {
         // trigger a modal
-        spliceItem(result);
+        spliceItem(result)
       }
     } else {
       // if item moved positions in the same column
-      spliceItem(result);
+      spliceItem(result)
     }
-  };
+  }
 
   const renderColumns = () => {
     setColumns({
@@ -240,42 +239,41 @@ function DragNDrop() {
         name: "Offers",
         items: offersColumn,
       },
-    });
-  };
+    })
+  }
 
-  const organizeColumns = (data) => {
-    appliedColumn = data.filter((item) => item.status === "applied");
-    interviewingColumn = data.filter((item) => item.status === "interviewing");
-    offersColumn = data.filter((item) => item.status === "offers");
-    renderColumns();
-  };
+  const organizeColumns = data => {
+    appliedColumn = data.filter(item => item.status === "applied")
+    interviewingColumn = data.filter(item => item.status === "interviewing")
+    offersColumn = data.filter(item => item.status === "offers")
+    renderColumns()
+  }
 
-  const createNewJob = (data) => {
-    appliedColumn = [...appliedColumn, ...data];
-    renderColumns();
-  };
+  const createNewJob = data => {
+    appliedColumn = [...appliedColumn, ...data]
+    renderColumns()
+  }
 
-  const fetchItems = (user) => {
+  const fetchItems = user => {
     const url = GlobalState.getItemsUrl
-
     axios
       .post(url, {
         user: user.email,
       })
-      .then((json) => {
-        organizeColumns(json.data);
+      .then(json => {
+        organizeColumns(json.data)
       })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
+      .catch(err => {
+        console.log(err)
+      })
+  }
 
   useEffect(() => {
     if (user) {
       // wait for user obj to be defined before fetching items for that user
-      fetchItems(user);
+      fetchItems(user)
     }
-  }, [user]);
+  }, [user])
 
   return (
     <>
@@ -283,7 +281,7 @@ function DragNDrop() {
       <div className="flex user-select-none">
         {showNoteModal && <NoteModal column={noteModalColumn} />}
         <DragDropContext
-          onDragEnd={(result) => onDragEnd(result, columns, setColumns)}
+          onDragEnd={result => onDragEnd(result, columns, setColumns)}
         >
           {Object.entries(columns).map(([id, column]) => {
             return (
@@ -337,9 +335,9 @@ function DragNDrop() {
                                       <div
                                         className="absolute right-0 top-10 transform -translate-x-4 cursor-pointer text-gray-400 hover:text-black transition-colors duration-500 ease-in-out"
                                         onClick={() => {
-                                          setEditingItemIndex(index);
-                                          setNoteModalColumn(interviewingID);
-                                          setShowNoteModal(true);
+                                          setEditingItemIndex(index)
+                                          setNoteModalColumn(interviewingID)
+                                          setShowNoteModal(true)
                                         }}
                                       >
                                         <svg
@@ -362,9 +360,9 @@ function DragNDrop() {
                                       <div
                                         className="absolute right-0 top-10 transform -translate-x-4 cursor-pointer text-gray-400 hover:text-black transition-colors duration-500 ease-in-out"
                                         onClick={() => {
-                                          setEditingItemIndex(index);
-                                          setNoteModalColumn(offersID);
-                                          setShowNoteModal(true);
+                                          setEditingItemIndex(index)
+                                          setNoteModalColumn(offersID)
+                                          setShowNoteModal(true)
                                         }}
                                       >
                                         <svg
@@ -393,24 +391,24 @@ function DragNDrop() {
                                       </div>
                                     )}
                                   </div>
-                                );
+                                )
                               }}
                             </Draggable>
-                          );
+                          )
                         })}
                         {provided.placeholder}
                       </div>
-                    );
+                    )
                   }}
                 </Droppable>
               </div>
-            );
+            )
           })}
           <TrashCan />
         </DragDropContext>
       </div>
     </>
-  );
+  )
 }
 
-export default DragNDrop;
+export default DragNDrop

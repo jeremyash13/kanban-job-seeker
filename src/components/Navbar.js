@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState } from "react"
 import {
   Nav,
   NavItem,
@@ -9,18 +9,9 @@ import {
   DropdownToggle,
   Fade,
   NavLink,
-} from "shards-react";
-import { useAuth0 } from "@auth0/auth0-react";
+} from "shards-react"
+import { useAuth } from "react-use-auth"
 import SimpleSeekLogoApp from "./SimpleSeekLogoApp"
-
-const LoginButton = () => {
-  const { loginWithRedirect } = useAuth0();
-  return (
-    <Button pill size="sm" onClick={() => loginWithRedirect()}>
-      Log In
-    </Button>
-  );
-};
 
 const LogoutIcon = () => {
   return (
@@ -40,20 +31,20 @@ const LogoutIcon = () => {
         <path fillRule="evenodd" d="M7.5 8V1h1v7h-1z" />
       </svg>
     </div>
-  );
-};
+  )
+}
 
 function Navbar() {
-  const { user, isAuthenticated, logout } = useAuth0();
-  const [toggle, setToggle] = useState(false);
+  const { user, isAuthenticated, logout } = useAuth()
+  const [toggle, setToggle] = useState(false)
   return (
     <div className="flex">
       <div className="mr-auto">
-        <SimpleSeekLogoApp/>
+        <SimpleSeekLogoApp />
       </div>
       <Nav>
         <NavItem>
-          {isAuthenticated ? (
+          {isAuthenticated && (
             <Fade>
               <Dropdown
                 open={toggle}
@@ -63,9 +54,7 @@ function Navbar() {
               >
                 <DropdownToggle nav caret>{`Hi, ${user.email}`}</DropdownToggle>
                 <DropdownMenu small right>
-                  <DropdownItem
-                    onClick={() => logout({ returnTo: window.location.origin })}
-                  >
+                  <DropdownItem onClick={() => logout()}>
                     <div className="flex align-bottom">
                       <LogoutIcon />
                       <span className="ml-2">Log Out</span>
@@ -74,13 +63,11 @@ function Navbar() {
                 </DropdownMenu>
               </Dropdown>
             </Fade>
-          ) : (
-            <LoginButton />
           )}
         </NavItem>
       </Nav>
     </div>
-  );
+  )
 }
 
-export default Navbar;
+export default Navbar
