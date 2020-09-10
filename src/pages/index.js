@@ -14,7 +14,7 @@ const IndexPage = () => {
   const { isAuthenticated } = useAuth()
   const isBrowser = typeof window !== `undefined`
 
-  if (isAuthenticated && isBrowser) {
+  if (isAuthenticated() && isBrowser) {
     // need to check if Window Object is defined when calling navigate() or build will fail
     navigate("/app")
     return null

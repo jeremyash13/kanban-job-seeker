@@ -44,7 +44,7 @@ function Navbar() {
       </div>
       <Nav>
         <NavItem>
-          {isAuthenticated && (
+          {isAuthenticated() && (
             <Fade>
               <Dropdown
                 open={toggle}
