@@ -26,20 +26,19 @@ function Hero() {
           />
         </div>
       </div>
-      <div className="absolute bottom-0 hero-wavy transform translate-y-1">
+      <div className="absolute bottom-0 hero-wavy transform translate-y-3 w-full">
         <svg
           version="1.1"
           id="Layer_1"
           xmlns="http://www.w3.org/2000/svg"
           x="0px"
           y="0px"
-          viewBox="0 0 1920 172"
+          viewBox="0 0 1920 238"
         >
           <g>
             <path
               fill="white"
-              class="st0"
-              d="M1036,109.3c227.6-68,610.8-163,884-71.1V172H0V0C299.2,195,756.8,192.7,1036,109.3z"
+              d="M1920,38.2V238H0V0c299.2,195,756.8,192.7,1036,109.3C1263.6,41.3,1646.8-53.7,1920,38.2z"
             />
           </g>
         </svg>
