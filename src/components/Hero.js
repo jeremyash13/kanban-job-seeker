@@ -8,7 +8,7 @@ function Hero() {
     <div className="hero-img relative">
       <SimpleSeekLogoLanding />
       <div className="hero-overlay absolute inset-0"></div>
-      <div className="text-white hero-text-alignment w-full px-4 lg:max-w-screen-lg absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-col lg:flex-row lg:justify-between">
+      <div className="text-white hero-text-alignment w-full px-4 lg:max-w-screen-lg absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 lg:-translate-y-48 flex flex-col lg:flex-row lg:justify-between">
         <div className="lg:max-w-lg my-auto pr-4">
           <h3 className="text-white">Welcome to Simple Seek.</h3>
           <p>
@@ -26,7 +26,7 @@ function Hero() {
           />
         </div>
       </div>
-      <div className="absolute bottom-0 hero-wavy transform translate-y-3 w-full">
+      <div className="absolute bottom-0 hero-wavy transform translate-y-3 xl:translate-y-3 w-full">
         <svg
           version="1.1"
           id="Layer_1"
