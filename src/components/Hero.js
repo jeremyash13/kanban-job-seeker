@@ -8,8 +8,8 @@ function Hero() {
     <div className="hero-img relative">
       <SimpleSeekLogoLanding />
       <div className="hero-overlay absolute inset-0"></div>
-      <div className="text-white absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex">
-        <div className="max-w-lg my-auto pr-4">
+      <div className="text-white hero-text-alignment w-full px-4 lg:max-w-screen-xl absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-col lg:flex-row lg:justify-between">
+        <div className="lg:max-w-lg my-auto pr-4">
           <h3 className="text-white">Welcome to Simple Seek.</h3>
           <p>
             Simple Seek’s Kanban-style board keeps track of all your job
@@ -18,7 +18,7 @@ function Hero() {
           </p>
           <CallToAction />
         </div>
-        <div className="">
+        <div className="hidden lg:block lg:max-w-sm">
           <img
             className="rounded"
             src={MacOsImg}

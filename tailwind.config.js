@@ -12,6 +12,9 @@ module.exports = {
         "whitewhite": "#fff",
         "flatblack": "rgba(0,0,0,.75)",
         "primary":"#007bff"
+      },
+      minWidth: {
+        "256": "256px"
       }
     },
   },

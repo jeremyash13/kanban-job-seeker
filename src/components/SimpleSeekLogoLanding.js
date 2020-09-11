@@ -2,7 +2,7 @@ import React from "react";
 
 export default function SimpleSeekLogoLanding() {
   return (
-    <div className="w-40 absolute right-0 mt-4 mr-5 z-10">
+    <div className="w-40 absolute right-0 mt-2 mr-3 sm:mt-4 sm:mr-5 z-10">
       <svg
         viewBox="0 0 242 72"
         fill="none"

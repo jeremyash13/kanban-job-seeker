@@ -24,23 +24,23 @@ const IndexPage = () => {
         <SEO title="Get Started" />
         <Hero />
         <div className="flex flex-col mt-10 text-flatblack px-4">
-          <div className="flex mx-auto mt-10">
-            <div className="max-w-sm my-auto">
+          <div className="flex flex-col sm:flex-row mx-auto mt-10">
+            <div className="max-w-sm min-w-256 my-auto">
               <h3 className="text-flatblack">Drag and drop.</h3>
               <p>
                 Simple Seek’s drag and drop interface makes managing your job
                 hunt a breeze.
               </p>
             </div>
-            <div className="max-w-sm ml-10">
+            <div className="max-w-sm sm:ml-10">
               <img className="rounded" src={img1}></img>
             </div>
           </div>
-          <div className="flex mx-auto mt-32">
-            <div className="max-w-sm mr-10">
+          <div className="flex flex-col-reverse sm:flex-row mx-auto mt-32">
+            <div className="max-w-sm sm:mr-10">
               <img className="rounded" src={img2}></img>
             </div>
-            <div className="max-w-sm my-auto">
+            <div className="max-w-sm min-w-256 my-auto">
               <h3 className="text-flatblack">Track your applications.</h3>
               <p>
                 Tracking a new job is as simple as clicking the “New” button,
@@ -48,15 +48,14 @@ const IndexPage = () => {
               </p>
             </div>
           </div>
-          <div className="flex mx-auto mt-32">
-            <div className="max-w-sm my-auto">
+          <div className="flex flex-col sm:flex-row mx-auto mt-32">
+            <div className="max-w-sm min-w-256 my-auto">
               <h3 className="text-flatblack">Add notes.</h3>
               <p>
-                Keeping track of the details couldn’t be easier thanks to the
-                ability to create notes.
+                Keeping track of the details couldn’t be easier.
               </p>
             </div>
-            <div className="max-w-sm ml-10">
+            <div className="max-w-sm sm:ml-10">
               <img className="rounded" src={img3}></img>
             </div>
           </div>

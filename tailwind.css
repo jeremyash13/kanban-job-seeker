@@ -37,16 +37,26 @@ body {
   scrollbar-width: none;
 }
 
+@media (min-width: 1024px) {
+  .hero-text-alignment {
+    text-align: left;
+  }
+}
+@media (max-width: 1024px) {
+  /* mobile first */
+  .hero-text-alignment {
+    text-align: center;
+  }
+}
+
 .hero-img {
   height: 700px;
   background-image: url("./src/images/hero-stock.jpg");
   background-position-y: bottom;
+  background-position-x: center;
   background-size: cover;
   background-repeat: no-repeat;
 }
 .hero-overlay {
   background-color: rgba(0, 123, 255, 0.8);
-}
-.hero-wavy {
-  /* filter: drop-shadow(0 0 50px rgba(0,0,0,1)); */
 }
