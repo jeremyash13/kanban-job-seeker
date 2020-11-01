@@ -1,0 +1,3 @@
+Unauthenticated users:
+    ☐ look for cookie containing a uuid
+        ☐ if no cookie/uuid is found, generate a uuid and store in cookie
