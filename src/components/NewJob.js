@@ -13,7 +13,7 @@ import {
   Button,
 } from "shards-react"
 
-function NewJob({ createNewJob }) {
+function NewJob({ createNewJob, userId }) {
   const GlobalState = Global.useContainer()
 
   const [toggle, setToggle] = useState(false)
@@ -26,7 +26,7 @@ function NewJob({ createNewJob }) {
   const roleRef = useRef()
   const companyRef = useRef()
 
-  const { user } = useAuth()
+  // const { user } = useAuth()
 
   const toggleFunc = () => {
     setToggle(!toggle)
@@ -104,7 +104,8 @@ function NewJob({ createNewJob }) {
                   if (!(roleInvalid && companyInvalid)) {
                     const newJobItem = {
                       _id: ObjectID().toString(),
-                      user: user.email,
+                      email: null,
+                      user: userId,
                       role: roleRef.current.value,
                       company: companyRef.current.value,
                       status: "applied",
