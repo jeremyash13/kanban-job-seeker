@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react"
 import axios from "axios"
-import { useAuth } from "react-use-auth"
+// import { useAuth } from "react-use-auth"
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd"
 import {
   Modal,
@@ -9,8 +9,12 @@ import {
   Form,
   FormInput,
   Button,
+  Fade,
 } from "shards-react"
 import Global from "../state/Global"
+
+import { css } from "@emotion/core"
+import HashLoader from "react-spinners/HashLoader"
 
 import NewJob from "./NewJob"
 import TrashCan from "./TrashCan"
@@ -23,9 +27,9 @@ let appliedColumn = []
 let interviewingColumn = []
 let offersColumn = []
 
-function DragNDrop() {
+function DragNDrop({ userId }) {
   const GlobalState = Global.useContainer()
-  const { user } = useAuth()
+  // const { user } = useAuth()
 
   const [columns, setColumns] = useState({})
 
@@ -33,6 +37,8 @@ function DragNDrop() {
   const [noteModalColumn, setNoteModalColumn] = useState(null)
 
   const [editingItemIndex, setEditingItemIndex] = useState(null)
+
+  const [jobsLoading, setJobsLoading] = useState(true)
 
   const NoteModal = ({ column }) => {
     const [value, setValue] = useState("")
@@ -255,13 +261,16 @@ function DragNDrop() {
   }
 
   const fetchItems = user => {
+    setJobsLoading(true)
     const url = GlobalState.getItemsUrl
     axios
       .post(url, {
-        user: user.email,
+        // user: user.email,
+        user: userId,
       })
       .then(json => {
         organizeColumns(json.data)
+        setJobsLoading(false)
       })
       .catch(err => {
         console.log(err)
@@ -269,144 +278,158 @@ function DragNDrop() {
   }
 
   useEffect(() => {
-    if (user) {
+    if (userId) {
       // wait for user obj to be defined before fetching items for that user
-      fetchItems(user)
+      fetchItems(userId)
     }
-  }, [user])
+  }, [userId])
 
   return (
     <>
-      <NewJob createNewJob={createNewJob} />
-      <div className="flex user-select-none">
-        {showNoteModal && <NoteModal column={noteModalColumn} />}
-        <DragDropContext
-          onDragEnd={result => onDragEnd(result, columns, setColumns)}
-        >
-          {Object.entries(columns).map(([id, column]) => {
-            return (
-              <div className="mr-4" key={id + column}>
-                <h5 className="font-medium">{`${column.items.length} ${column.name}`}</h5>
-                <Droppable droppableId={id} key={id}>
-                  {(provided, snapshot) => {
-                    return (
-                      <div
-                        {...provided.droppableProps}
-                        ref={provided.innerRef}
-                        className="rounded overflow-y-scroll custom-scrollbar"
-                        style={{
-                          background: snapshot.isDraggingOver ? "#007bff" : "",
-                          boxShadow: snapshot.isDraggingOver
-                            ? "inset 0 0 40px rgba(0, 0, 0,.20), inset 0 0 4px rgba(0, 0, 0,.5)"
-                            : "inset 0 0 40px rgba(0, 123, 255,.1), inset 0 0 4px rgba(0, 0, 0,.25)",
-                          padding: "4px",
-                          width: "275px",
-                          minHeight: "500px",
-                          maxHeight: "calc(100vh - 300px)",
-                        }}
-                      >
-                        {column.items.map((item, index) => {
+      {jobsLoading ? (
+        <div className="sweet-loading absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+          <HashLoader size={150} color={"#007bff"} loading={true} />
+        </div>
+      ) : (
+        <>
+          <Fade>
+            <NewJob createNewJob={createNewJob} userId={userId} />
+            <div className="flex user-select-none">
+              {showNoteModal && <NoteModal column={noteModalColumn} />}
+              <DragDropContext
+                onDragEnd={result => onDragEnd(result, columns, setColumns)}
+              >
+                {Object.entries(columns).map(([id, column]) => {
+                  return (
+                    <div className="mr-4" key={id + column}>
+                      <h5 className="font-medium">{`${column.items.length} ${column.name}`}</h5>
+                      <Droppable droppableId={id} key={id}>
+                        {(provided, snapshot) => {
                           return (
-                            <Draggable
-                              key={item._id}
-                              draggableId={item._id}
-                              index={index}
-                            >
-                              {(provided, snapshot) => {
-                                return (
-                                  <div
-                                    ref={provided.innerRef}
-                                    {...provided.draggableProps}
-                                    {...provided.dragHandleProps}
-                                    className="rounded relative"
-                                    style={{
-                                      userSelect: "none",
-                                      padding: "16px",
-                                      margin: "0 0 8px 0",
-                                      minHeight: "50px",
-                                      backgroundColor: "white",
-                                      boxShadow: snapshot.isDragging
-                                        ? "0 10px 20px rgba(0, 0, 0, 0.1), 0 4px 4px 0 rgba(0, 0, 0, 0.10)"
-                                        : "0 10px 20px rgba(0, 0, 0, 0.1)",
-                                      ...provided.draggableProps.style,
-                                    }}
-                                  >
-                                    {item.status === "interviewing" && (
-                                      <div
-                                        className="absolute right-0 top-10 transform -translate-x-4 cursor-pointer text-gray-400 hover:text-black transition-colors duration-500 ease-in-out"
-                                        onClick={() => {
-                                          setEditingItemIndex(index)
-                                          setNoteModalColumn(interviewingID)
-                                          setShowNoteModal(true)
-                                        }}
-                                      >
-                                        <svg
-                                          width="1em"
-                                          height="1em"
-                                          viewBox="0 0 16 16"
-                                          className="bi bi-pencil-square"
-                                          fill="currentColor"
-                                          xmlns="http://www.w3.org/2000/svg"
-                                        >
-                                          <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456l-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
-                                          <path
-                                            fillRule="evenodd"
-                                            d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"
-                                          />
-                                        </svg>
-                                      </div>
-                                    )}
-                                    {item.status === "offers" && (
-                                      <div
-                                        className="absolute right-0 top-10 transform -translate-x-4 cursor-pointer text-gray-400 hover:text-black transition-colors duration-500 ease-in-out"
-                                        onClick={() => {
-                                          setEditingItemIndex(index)
-                                          setNoteModalColumn(offersID)
-                                          setShowNoteModal(true)
-                                        }}
-                                      >
-                                        <svg
-                                          width="1em"
-                                          height="1em"
-                                          viewBox="0 0 16 16"
-                                          className="bi bi-pencil-square"
-                                          fill="currentColor"
-                                          xmlns="http://www.w3.org/2000/svg"
-                                        >
-                                          <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456l-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
-                                          <path
-                                            fillRule="evenodd"
-                                            d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"
-                                          />
-                                        </svg>
-                                      </div>
-                                    )}
-                                    <h6 className="mb-0">{item.role}</h6>
-                                    <div className="text-gray-500 text-sm font-normal mb-2">
-                                      {item.company}
-                                    </div>
-                                    {item.note && (
-                                      <div className="text-black text-sm font-normal">
-                                        {item.note}
-                                      </div>
-                                    )}
-                                  </div>
-                                )
+                            <div
+                              {...provided.droppableProps}
+                              ref={provided.innerRef}
+                              className="rounded overflow-y-scroll custom-scrollbar"
+                              style={{
+                                background: snapshot.isDraggingOver
+                                  ? "#007bff"
+                                  : "",
+                                boxShadow: snapshot.isDraggingOver
+                                  ? "inset 0 0 40px rgba(0, 0, 0,.20), inset 0 0 4px rgba(0, 0, 0,.5)"
+                                  : "inset 0 0 40px rgba(0, 123, 255,.1), inset 0 0 4px rgba(0, 0, 0,.25)",
+                                padding: "4px",
+                                width: "275px",
+                                minHeight: "500px",
+                                maxHeight: "calc(100vh - 300px)",
                               }}
-                            </Draggable>
+                            >
+                              {column.items.map((item, index) => {
+                                return (
+                                  <Draggable
+                                    key={item._id}
+                                    draggableId={item._id}
+                                    index={index}
+                                  >
+                                    {(provided, snapshot) => {
+                                      return (
+                                        <div
+                                          ref={provided.innerRef}
+                                          {...provided.draggableProps}
+                                          {...provided.dragHandleProps}
+                                          className="rounded relative"
+                                          style={{
+                                            userSelect: "none",
+                                            padding: "16px",
+                                            margin: "0 0 8px 0",
+                                            minHeight: "50px",
+                                            backgroundColor: "white",
+                                            boxShadow: snapshot.isDragging
+                                              ? "0 10px 20px rgba(0, 0, 0, 0.1), 0 4px 4px 0 rgba(0, 0, 0, 0.10)"
+                                              : "0 10px 20px rgba(0, 0, 0, 0.1)",
+                                            ...provided.draggableProps.style,
+                                          }}
+                                        >
+                                          {item.status === "interviewing" && (
+                                            <div
+                                              className="absolute right-0 top-10 transform -translate-x-4 cursor-pointer text-gray-400 hover:text-black transition-colors duration-500 ease-in-out"
+                                              onClick={() => {
+                                                setEditingItemIndex(index)
+                                                setNoteModalColumn(
+                                                  interviewingID
+                                                )
+                                                setShowNoteModal(true)
+                                              }}
+                                            >
+                                              <svg
+                                                width="1em"
+                                                height="1em"
+                                                viewBox="0 0 16 16"
+                                                className="bi bi-pencil-square"
+                                                fill="currentColor"
+                                                xmlns="http://www.w3.org/2000/svg"
+                                              >
+                                                <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456l-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                                                <path
+                                                  fillRule="evenodd"
+                                                  d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"
+                                                />
+                                              </svg>
+                                            </div>
+                                          )}
+                                          {item.status === "offers" && (
+                                            <div
+                                              className="absolute right-0 top-10 transform -translate-x-4 cursor-pointer text-gray-400 hover:text-black transition-colors duration-500 ease-in-out"
+                                              onClick={() => {
+                                                setEditingItemIndex(index)
+                                                setNoteModalColumn(offersID)
+                                                setShowNoteModal(true)
+                                              }}
+                                            >
+                                              <svg
+                                                width="1em"
+                                                height="1em"
+                                                viewBox="0 0 16 16"
+                                                className="bi bi-pencil-square"
+                                                fill="currentColor"
+                                                xmlns="http://www.w3.org/2000/svg"
+                                              >
+                                                <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456l-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                                                <path
+                                                  fillRule="evenodd"
+                                                  d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"
+                                                />
+                                              </svg>
+                                            </div>
+                                          )}
+                                          <h6 className="mb-0">{item.role}</h6>
+                                          <div className="text-gray-500 text-sm font-normal mb-2">
+                                            {item.company}
+                                          </div>
+                                          {item.note && (
+                                            <div className="text-black text-sm font-normal">
+                                              {item.note}
+                                            </div>
+                                          )}
+                                        </div>
+                                      )
+                                    }}
+                                  </Draggable>
+                                )
+                              })}
+                              {provided.placeholder}
+                            </div>
                           )
-                        })}
-                        {provided.placeholder}
-                      </div>
-                    )
-                  }}
-                </Droppable>
-              </div>
-            )
-          })}
-          <TrashCan />
-        </DragDropContext>
-      </div>
+                        }}
+                      </Droppable>
+                    </div>
+                  )
+                })}
+                <TrashCan />
+              </DragDropContext>
+            </div>
+          </Fade>
+        </>
+      )}
     </>
   )
 }
