@@ -8,7 +8,6 @@ import {
   DropdownMenu,
   DropdownToggle,
   Fade,
-  NavLink,
 } from "shards-react"
 import { useAuth } from "react-use-auth"
 import SimpleSeekLogoApp from "./SimpleSeekLogoApp"
@@ -35,17 +34,18 @@ const LogoutIcon = () => {
 }
 
 function Navbar() {
-  const { user, isAuthenticated, logout } = useAuth()
+  const { user, isAuthenticated, logout, login } = useAuth()
   const [toggle, setToggle] = useState(false)
+
   return (
-    <div className="flex">
-      <div className="mr-auto">
-        <SimpleSeekLogoApp />
-      </div>
-      <Nav>
-        <NavItem>
-          {isAuthenticated() && (
-            <Fade>
+    <Fade>
+      <div className="flex shadow-sm py-2 px-4">
+        <div className="flex mr-auto">
+          <SimpleSeekLogoApp />
+        </div>
+        <Nav>
+          <NavItem className="h-full flex">
+            {isAuthenticated() ? (
               <Dropdown
                 open={toggle}
                 toggle={() => setToggle(!toggle)}
@@ -62,11 +62,16 @@ function Navbar() {
                   </DropdownItem>
                 </DropdownMenu>
               </Dropdown>
-            </Fade>
-          )}
-        </NavItem>
-      </Nav>
-    </div>
+            ) : (
+              <div className="flex my-auto">
+                <div className="mr-6 my-auto text-primary">Welcome, Guest</div>
+                {/* <Button onClick={() => login()}>Log In</Button> */}
+              </div>
+            )}
+          </NavItem>
+        </Nav>
+      </div>
+    </Fade>
   )
 }
 
