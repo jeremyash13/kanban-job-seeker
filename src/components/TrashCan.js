@@ -17,13 +17,13 @@ function TrashCan() {
                 boxShadow: snapshot.isDraggingOver
                   ? "inset 0 0 40px rgba(0, 0, 0,.20), inset 0 0 4px rgba(0, 0, 0,.5)"
                   : "inset 0 0 40px rgba(0, 123, 255,.1), inset 0 0 4px rgba(0, 0, 0,.25)",
-                width: "75px",
-                height: "75px",
+                width: "267px",
+                height: "110px",
               }}
             >
               <svg
-                width="2em"
-                height="2em"
+                width="4rem"
+                height="4rem"
                 viewBox="0 0 16 16"
                 className={`bi bi-trash-fill absolute transform top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-gray-400 transition-colors duration-200 ease-in-out 
                   ${snapshot.isDraggingOver ? "text-white" : ""}`}
