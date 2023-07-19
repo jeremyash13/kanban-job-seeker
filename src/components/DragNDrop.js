@@ -29,7 +29,6 @@ let offersColumn = []
 
 function DragNDrop({ userId }) {
   const GlobalState = Global.useContainer()
-  // const { user } = useAuth()
 
   const [columns, setColumns] = useState({})
 

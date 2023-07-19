@@ -1,6 +1,5 @@
 import React, { useState, useRef } from "react"
 import axios from "axios"
-import { useAuth } from "react-use-auth"
 import Global from "../state/Global"
 import ObjectID from "bson-objectid"
 
@@ -26,7 +25,6 @@ function NewJob({ createNewJob, userId }) {
   const roleRef = useRef()
   const companyRef = useRef()
 
-  // const { user } = useAuth()
 
   const toggleFunc = () => {
     setToggle(!toggle)
